@@ -3,7 +3,9 @@ import fastifyStatic from '@fastify/static';
 import fastifyWebsocket from '@fastify/websocket';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import Fastify from 'fastify';
+import * as fs from 'fs';
 
+import type { PersonaSettingsLoaded } from '../../core/src/messages.js';
 import type { AgentRuntime } from './agentRuntime.js';
 import type { AgentStateStore } from './agentStateStore.js';
 import type {
@@ -53,6 +55,10 @@ export interface HttpServerOptions {
   onSetHooksEnabled?: SetHooksEnabledSideEffect;
   /** Invoked when an external asset directory is added/removed. Standalone reloads + re-broadcasts assets here. */
   onReloadAssets?: ReloadAssetsSideEffect;
+  /** See ClientMessageContext.persona. */
+  persona?: () => PersonaSettingsLoaded;
+  /** Voice files served at /speech-audio/ (standalone; absent dir = nothing served). */
+  speechAudioDir?: string;
   /** PTY terminals for standalone-launched agents. Absent = terminal feature off
    *  (VS Code embedded mode, where the editor owns terminals). */
   ptyManager?: PtySessionManager;
@@ -95,6 +101,15 @@ export async function createHttpServer(options: HttpServerOptions): Promise<Http
       root: options.staticDir,
       prefix: '/',
     });
+    // Voice files for the speech bubbles (the webview plays /speech-audio/<speaker>/<id>.ogg).
+    if (options.speechAudioDir && fs.existsSync(options.speechAudioDir)) {
+      await app.register(fastifyStatic, {
+        root: options.speechAudioDir,
+        prefix: '/speech-audio/',
+        decorateReply: false,
+        allowedPath: (pathName) => /\.(ogg|wav|mp3)$/i.test(pathName),
+      });
+    }
     // HTML5 history fallback: serve index.html for unmatched routes
     app.setNotFoundHandler((_req, reply) => {
       reply.sendFile('index.html');
@@ -260,6 +275,7 @@ function registerWebSocketRoute(
           cache: options.assetCache ?? null,
           onSetHooksEnabled: options.onSetHooksEnabled,
           onReloadAssets: options.onReloadAssets,
+          persona: options.persona,
           privileged,
           ptyManager: options.ptyManager,
         });

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { HooksConsentRequest } from '../../../core/src/messages.js';
+import type { HooksConsentRequest, PersonaSettingsLoaded } from '../../../core/src/messages.js';
+import { parseAgentLabel } from '../../../core/src/persona.js';
+import { SPEECH_FILLER_TICK_MS } from '../constants.js';
 import { playDoneSound, playPermissionSound, setSoundEnabled } from '../notificationSound.js';
 import type { ExistingAgentMeta, PendingAgent } from '../office/engine/existingAgents.js';
 import { reconcileExistingAgents } from '../office/engine/existingAgents.js';
@@ -11,7 +13,7 @@ import { buildDynamicCatalog } from '../office/layout/furnitureCatalog.js';
 import { migrateLayoutColors } from '../office/layout/layoutSerializer.js';
 import { setCarpetSprites } from '../office/sprites/carpetTiles.js';
 import { setPetTemplates } from '../office/sprites/petSpriteData.js';
-import { setCharacterTemplates } from '../office/sprites/spriteData.js';
+import { getLoadedCharacterCount, setCharacterTemplates } from '../office/sprites/spriteData.js';
 import {
   extractToolName,
   isSubagentToolName,
@@ -19,6 +21,15 @@ import {
 } from '../office/toolUtils.js';
 import type { OfficeLayout, ToolActivity } from '../office/types.js';
 import { setWallSprites } from '../office/wallTiles.js';
+import { paletteForNameNow, setPersonaSettings } from '../persona/personaState.js';
+import {
+  forgetCharacter,
+  pinBubble,
+  setSpeaker,
+  speak,
+  speakForTool,
+  tickFillers,
+} from '../persona/speechRuntime.js';
 import { isBrowserRuntime, isE2E } from '../runtime.js';
 import { transport } from '../transport/index.js';
 
@@ -359,8 +370,14 @@ export function useExtensionMessages(
           // in the same workspace as the lead). Name shown via agentName (teamRoleLabel).
           // Seat them at the free seat closest to the lead so the team clusters.
           const parentCh = os.characters.get(teammateParentId);
-          const palette = parentCh ? parentCh.palette : undefined;
-          const hueShift = parentCh ? parentCh.hueShift : undefined;
+          // A named teammate wears its own face (persona); otherwise the lead's.
+          const speaker = teammateName ? parseAgentLabel(teammateName).name : undefined;
+          const ownPalette = speaker
+            ? paletteForNameNow(speaker, getLoadedCharacterCount())
+            : undefined;
+          const palette = ownPalette ?? (parentCh ? parentCh.palette : undefined);
+          const hueShift = ownPalette !== undefined ? 0 : parentCh ? parentCh.hueShift : undefined;
+          setSpeaker(id, speaker);
           os.addAgent(
             id,
             palette,
@@ -403,8 +420,12 @@ export function useExtensionMessages(
         setSubagentTools((prev) => omitKey(prev, id));
         // Remove all sub-agent characters belonging to this agent
         delete backgroundParentToolIdsRef.current[id];
+        for (const [subId, meta] of os.subagentMeta) {
+          if (meta.parentAgentId === id) forgetCharacter(subId);
+        }
         os.removeAllSubagents(id);
         setSubagentCharacters((prev) => prev.filter((s) => s.parentAgentId !== id));
+        forgetCharacter(id);
         os.removeAgent(id);
       } else if (msg.type === 'existingAgents') {
         const incoming = msg.agents as number[];
@@ -461,6 +482,7 @@ export function useExtensionMessages(
           };
         });
         const toolName = (msg.toolName as string | undefined) ?? extractToolName(status);
+        if (toolName) speakForTool(id, toolName, status);
         os.setAgentTool(id, toolName);
         os.setAgentActive(id, true);
         // Don't clear the permission bubble if the hook already confirmed permission is needed
@@ -490,8 +512,21 @@ export function useExtensionMessages(
           !isTeammateSpawn &&
           (!runInBackground || !parentHasTeam)
         ) {
-          const label = status.startsWith('Subtask:') ? status.slice('Subtask:'.length).trim() : '';
-          const subId = os.addSubagent(id, toolId);
+          // The full spawn description when the host sent it ("Linda · clothes · triage"),
+          // else the status's shortened copy.
+          const description = msg.description as string | undefined;
+          const label =
+            description ??
+            (status.startsWith('Subtask:') ? status.slice('Subtask:'.length).trim() : '');
+          const parsed = parseAgentLabel(label);
+          const isNew = os.getSubagentId(id, toolId) === null;
+          const subId = os.addSubagent(
+            id,
+            toolId,
+            parsed.named ? paletteForNameNow(parsed.name, getLoadedCharacterCount()) : undefined,
+          );
+          if (parsed.named) setSpeaker(subId, parsed.name);
+          if (isNew) speak(subId, 'start_item');
           setSubagentCharacters((prev) => {
             if (prev.some((s) => s.id === subId)) return prev;
             return [...prev, { id: subId, parentAgentId: id, parentToolId: toolId, label }];
@@ -573,6 +608,7 @@ export function useExtensionMessages(
         if (status === 'waiting') {
           os.showWaitingBubble(id, msg.awaitingInput === true);
           playDoneSound();
+          speak(id, 'done');
         }
       } else if (msg.type === 'agentToolPermission') {
         const id = msg.id as number;
@@ -586,6 +622,7 @@ export function useExtensionMessages(
         });
         os.showPermissionBubble(id);
         playPermissionSound();
+        speak(id, 'permission');
       } else if (msg.type === 'subagentToolPermission') {
         const id = msg.id as number;
         const parentToolId = msg.parentToolId as string;
@@ -593,6 +630,7 @@ export function useExtensionMessages(
         const subId = os.getSubagentId(id, parentToolId);
         if (subId !== null) {
           os.showPermissionBubble(subId);
+          speak(subId, 'permission');
         }
       } else if (msg.type === 'agentToolPermissionClear') {
         const id = msg.id as number;
@@ -646,6 +684,7 @@ export function useExtensionMessages(
           set.add(parentToolId);
         }
         const subToolName = extractToolName(status);
+        if (subToolName) speakForTool(subId, subToolName, status);
         os.setAgentTool(subId, subToolName);
         os.setAgentActive(subId, true);
       } else if (msg.type === 'subagentToolDone') {
@@ -681,6 +720,13 @@ export function useExtensionMessages(
           }
           return { ...prev, [id]: next };
         });
+        // Her "done" line stays where she stood while she despawns.
+        const clearedSubId = os.getSubagentId(id, parentToolId);
+        if (clearedSubId !== null) {
+          const subCh = os.characters.get(clearedSubId);
+          if (speak(clearedSubId, 'done') && subCh) pinBubble(clearedSubId, subCh.x, subCh.y);
+          forgetCharacter(clearedSubId);
+        }
         // Remove sub-agent character
         os.removeSubagent(id, parentToolId);
         setSubagentCharacters((prev) =>
@@ -741,6 +787,8 @@ export function useExtensionMessages(
           reason: msg.reason as string,
           seq: (prev?.seq ?? 0) + 1,
         }));
+      } else if (msg.type === 'personaSettingsLoaded') {
+        setPersonaSettings(msg as PersonaSettingsLoaded);
       } else if (msg.type === 'settingsLoaded') {
         const soundOn = msg.soundEnabled as boolean;
         setSoundEnabled(soundOn);
@@ -841,6 +889,8 @@ export function useExtensionMessages(
           msg.leadAgentId as number | undefined,
           msg.teamUsesTmux as boolean | undefined,
         );
+        const teamAgentName = msg.agentName as string | undefined;
+        if (teamAgentName && !msg.isTeamLead) setSpeaker(id, parseAgentLabel(teamAgentName).name);
       } else if (msg.type === 'agentContextUsage') {
         const id = msg.id as number;
         os.setAgentContext(id, msg.contextTokens as number, msg.maxContextTokens as number);
@@ -848,7 +898,14 @@ export function useExtensionMessages(
     };
     const unsubscribe = transport.onMessage(handler);
     transport.send({ type: 'webviewReady' });
-    return unsubscribe;
+    // Idle fillers: every few seconds the named character silent the longest may talk.
+    const fillerTimer = setInterval(() => {
+      tickFillers(new Set(getOfficeState().characters.keys()));
+    }, SPEECH_FILLER_TICK_MS);
+    return () => {
+      clearInterval(fillerTimer);
+      unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getOfficeState]);
 

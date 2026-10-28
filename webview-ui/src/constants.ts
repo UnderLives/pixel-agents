@@ -204,6 +204,15 @@ export const INACTIVE_SEAT_TIMER_MIN_SEC = 3.0;
 export const INACTIVE_SEAT_TIMER_RANGE_SEC = 2.0;
 /** Default/fallback palette count (bundled characters). Actual count comes from getLoadedCharacterCount(). */
 export const PALETTE_COUNT = 6;
+
+// ── Persona (name tags + speech) ────────────────────────────
+/** How often the idle-filler check runs (the filler delay itself is a setting). */
+export const SPEECH_FILLER_TICK_MS = 15_000;
+/** Name tag: longest name and role shown before an ellipsis. */
+export const NAME_TAG_NAME_MAX = 18;
+export const NAME_TAG_ROLE_MAX = 30;
+/** Speech bubble max width in CSS px. */
+export const SPEECH_BUBBLE_MAX_WIDTH_PX = 220;
 export const AUTO_ON_FACING_DEPTH = 3;
 export const AUTO_ON_SIDE_DEPTH = 2;
 export const CHARACTER_HIT_HALF_WIDTH = 8;
@@ -283,6 +292,9 @@ export const CONTEXT_GAUGE_BG = '#222';
 // ── Agent Teams ─────────────────────────────────────────────
 export const TEAM_LEAD_COLOR = '#ffd700';
 export const TEAM_ROLE_COLOR = '#66aaff';
+/** Persona name tag: dark translucent backing so it reads over any floor, white name. */
+export const NAME_TAG_BG = 'rgba(20, 20, 32, 0.72)';
+export const NAME_TAG_NAME_COLOR = '#ffffff';
 
 // ── Pets ────────────────────────────────────────────────────────
 /** Walking speed in world pixels per second (matches character walk speed visually but slower). */

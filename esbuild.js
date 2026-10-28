@@ -35,6 +35,22 @@ function copyAssets() {
 }
 
 /**
+ * Copy the speech banks (speech/*.json, one per speaker) to dist/speech. Voice files
+ * are not bundled: they live in ~/.pixel-agents/speech/<speaker>/ (see personaSettings.ts).
+ */
+function copySpeech() {
+  const srcDir = path.join(__dirname, 'speech');
+  const dstDir = path.join(__dirname, 'dist', 'speech');
+  if (fs.existsSync(dstDir)) fs.rmSync(dstDir, { recursive: true });
+  if (!fs.existsSync(srcDir)) return;
+  fs.mkdirSync(dstDir, { recursive: true });
+  for (const f of fs.readdirSync(srcDir)) {
+    if (f.endsWith('.json')) fs.copyFileSync(path.join(srcDir, f), path.join(dstDir, f));
+  }
+  console.log('✓ Copied speech/*.json → dist/speech/');
+}
+
+/**
  * Bundle hook scripts (TypeScript) to dist/hooks via esbuild.
  * Produces a self-contained CJS file with shebang for Claude Code to execute.
  */
@@ -107,6 +123,7 @@ async function main() {
     await ctx.dispose();
     // Copy assets and hooks after build
     copyAssets();
+    copySpeech();
     buildHooks();
     await buildCli();
     await buildUninstall();

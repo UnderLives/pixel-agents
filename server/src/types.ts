@@ -79,6 +79,8 @@ export interface AgentState {
    *  the webview never creates a Subtask ghost for them. Transient, lazily
    *  created, never persisted. */
   teammateSpawnToolIds?: Set<string>;
+  /** Sub-agent spawn tool id -> its full `description` (name tags; status is truncated). */
+  spawnDescriptions?: Map<string, string>;
 
   // -- Avatar customization --
   /** Preferred character palette (0-5). If undefined, auto-assigned for diversity. */

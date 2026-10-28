@@ -16,6 +16,7 @@ import {
   PET_HIT_HEIGHT,
   WAITING_BUBBLE_DURATION_SEC,
 } from '../../constants.js';
+import { allowedPalettesNow } from '../../persona/personaState.js';
 import { getAnimationFrames, getCatalogEntry, getOnStateType } from '../layout/furnitureCatalog.js';
 import {
   createDefaultLayout,
@@ -429,13 +430,16 @@ export class OfficeState {
    */
   private pickDiversePalette(): { palette: number; hueShift: number } {
     // Count how many non-sub-agents use each base palette (0-5)
-    const paletteCount = getLoadedCharacterCount();
-    const counts = new Array(paletteCount).fill(0) as number[];
+    // Only the palettes the persona character set allows (all of them by default).
+    const allowed = allowedPalettesNow(getLoadedCharacterCount());
+    const counts = allowed.map(() => 0);
     for (const ch of this.characters.values()) {
       if (ch.isSubagent) continue;
-      if (ch.palette < paletteCount) counts[ch.palette]++;
+      const i = allowed.indexOf(ch.palette);
+      if (i >= 0) counts[i]++;
     }
-    return pickDiversePalette(paletteCount, counts);
+    const pick = pickDiversePalette(allowed.length, counts);
+    return { palette: allowed[pick.palette], hueShift: pick.hueShift };
   }
 
   addAgent(
@@ -723,14 +727,15 @@ export class OfficeState {
   }
 
   /** Create a sub-agent character with the parent's palette. Returns the sub-agent ID. */
-  addSubagent(parentAgentId: number, parentToolId: string): number {
+  /** `ownPalette`: a named sub-agent's own face (persona); otherwise the parent's. */
+  addSubagent(parentAgentId: number, parentToolId: string, ownPalette?: number): number {
     const key = `${parentAgentId}:${parentToolId}`;
     if (this.subagentIdMap.has(key)) return this.subagentIdMap.get(key)!;
 
     const id = this.nextSubagentId--;
     const parentCh = this.characters.get(parentAgentId);
-    const palette = parentCh ? parentCh.palette : 0;
-    const hueShift = parentCh ? parentCh.hueShift : 0;
+    const palette = ownPalette ?? (parentCh ? parentCh.palette : 0);
+    const hueShift = ownPalette !== undefined ? 0 : parentCh ? parentCh.hueShift : 0;
 
     // Find the closest walkable tile to the parent, avoiding tiles occupied by other characters
     const parentCol = parentCh ? parentCh.tileCol : 0;

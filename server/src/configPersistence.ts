@@ -71,6 +71,10 @@ export interface PixelAgentsConfig {
   /** User-defined Directories. Machine-wide by decision: a Directory defined
    *  from the phone shows up in VS Code and vice versa. */
   directories: UserDirectory[];
+  /** Standalone persona settings (name tags, character set, speech), hand-edited;
+   *  kept verbatim and read through normalizePersonaConfig. VS Code uses its own
+   *  `pixel-agents.*` settings instead. */
+  persona?: Record<string, unknown>;
 }
 
 const DEFAULT_ADAPTER_SETTINGS: AdapterSettings = {
@@ -228,6 +232,9 @@ export function readConfig(): PixelAgentsConfig {
       hooksConsent: parseHooksConsent(parsed.hooksConsent),
       hooksEnabled: parseHooksEnabled(parsed.hooksEnabled),
       directories: parseUserDirectories(parsed.directories),
+      ...(parsed.persona && typeof parsed.persona === 'object' && !Array.isArray(parsed.persona)
+        ? { persona: parsed.persona }
+        : {}),
     };
   } catch (err) {
     console.error('[Pixel Agents] Failed to read config file:', err);

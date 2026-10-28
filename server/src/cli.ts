@@ -32,6 +32,13 @@ import {
   WILDCARD_HOSTNAMES,
 } from './constants.js';
 import { FileStateAdapter } from './fileStateAdapter.js';
+import { setCharacterPolicy } from './paletteAssigner.js';
+import {
+  loadSpeechBanks,
+  normalizePersonaConfig,
+  personaSettingsMessage,
+  userSpeechDir,
+} from './personaSettings.js';
 import { claudeProvider, copyHookScript, hookProviderById } from './providers/index.js';
 import { PixelAgentsServer } from './server.js';
 import { PtySessionManager } from './terminal/ptySessionManager.js';
@@ -328,7 +335,20 @@ async function main(): Promise<void> {
       console.log('[Pixel Agents] Assets reloaded (external directory change)');
     };
 
+    // Persona (name tags, character set, speech): the `persona` block of
+    // ~/.pixel-agents/config.json, re-read on every connect so an edit applies on reload.
+    const speechAudioDir = userSpeechDir();
+    const persona = () => {
+      const personaConfig = normalizePersonaConfig(readConfig().persona);
+      setCharacterPolicy(personaConfig);
+      const banks = loadSpeechBanks(path.join(distRoot, 'speech'), speechAudioDir);
+      return personaSettingsMessage(personaConfig, banks, '/speech-audio');
+    };
+    setCharacterPolicy(normalizePersonaConfig(readConfig().persona));
+
     const config = await server.start({
+      persona,
+      speechAudioDir,
       store,
       runtime,
       embedded: false,

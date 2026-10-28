@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 
+import { parseAgentLabel, truncateLabel } from '../../../../core/src/persona.js';
 import { Button } from '../../components/ui/Button.js';
 import {
   BUBBLE_FADE_DURATION_SEC,
@@ -16,14 +17,21 @@ import {
   CONTEXT_GAUGE_HEIGHT_PX,
   CONTEXT_GAUGE_WIDTH_PX,
   CONTEXT_WARN_THRESHOLD,
+  NAME_TAG_BG,
+  NAME_TAG_NAME_COLOR,
+  NAME_TAG_NAME_MAX,
+  NAME_TAG_ROLE_MAX,
   OVERLAY_BUBBLE_Z_INDEX,
   OVERLAY_LABEL_SELECTED_Z_INDEX,
   OVERLAY_LABEL_Z_INDEX,
+  SPEECH_BUBBLE_MAX_WIDTH_PX,
   TEAM_LEAD_COLOR,
   TEAM_ROLE_COLOR,
   TOOL_OVERLAY_VERTICAL_OFFSET,
 } from '../../constants.js';
 import type { SubagentCharacter } from '../../hooks/useExtensionMessages.js';
+import { getPersona } from '../../persona/personaState.js';
+import { bubbleFor, pinnedBubbles } from '../../persona/speechRuntime.js';
 import type { OfficeState } from '../engine/officeState.js';
 import { overlayProjection } from '../projection.js';
 import { getCachedSprite } from '../sprites/spriteCache.js';
@@ -48,6 +56,62 @@ interface ToolOverlayProps {
   panRef: React.RefObject<{ x: number; y: number }>;
   onCloseAgent: (id: number) => void;
   alwaysShowOverlay: boolean;
+}
+
+/** Name shown for a lead session with no name of its own. */
+const BOSS_NAME = 'Boss';
+/** Marker in front of a lead's name, so the boss reads at a glance. */
+const BOSS_MARKER = '\u2605';
+
+interface NameTag {
+  name: string;
+  role: string | null;
+  boss: boolean;
+}
+
+/**
+ * Who a character is, for its name tag: a sub-agent by its spawn description
+ * ("<Name> · <domain> · <item>" -> name + "domain · item"), a teammate by its team
+ * name, and a lead session ("boss") by its name if it has one.
+ */
+function nameTagFor(
+  ch: { isSubagent: boolean; agentName?: string; leadAgentId?: number; directoryName?: string },
+  subLabel: string | undefined,
+): NameTag {
+  if (ch.isSubagent) {
+    const parsed = parseAgentLabel(subLabel || 'Subtask');
+    return { name: parsed.name, role: parsed.role, boss: false };
+  }
+  if (ch.leadAgentId !== undefined && ch.agentName) {
+    const parsed = parseAgentLabel(ch.agentName);
+    return { name: parsed.name, role: parsed.role, boss: false };
+  }
+  return { name: ch.agentName || BOSS_NAME, role: ch.directoryName ?? null, boss: true };
+}
+
+/** One line of a name tag / panel: "★ Name — role" cut to fit. */
+function tagLine(tag: NameTag): string {
+  const name = `${tag.boss ? `${BOSS_MARKER} ` : ''}${truncateLabel(tag.name, NAME_TAG_NAME_MAX)}`;
+  return tag.role ? `${name} \u2014 ${truncateLabel(tag.role, NAME_TAG_ROLE_MAX)}` : name;
+}
+
+/** A small pixel speech bubble (persona lines). */
+function SpeechBubble({ text }: { text: string }) {
+  return (
+    <div
+      className="pixel-panel px-6 pt-2 pb-3 leading-tight text-center"
+      style={{
+        fontSize: '15px',
+        maxWidth: SPEECH_BUBBLE_MAX_WIDTH_PX,
+        width: 'max-content',
+        whiteSpace: 'normal',
+        marginBottom: 4,
+      }}
+      data-testid="speech-bubble"
+    >
+      {text}
+    </div>
+  );
 }
 
 /** Derive a short human-readable activity string from tools/status */
@@ -160,6 +224,10 @@ export function ToolOverlay({
         const isSelected = selectedId === id;
         const isHovered = hoveredId === id;
         const isSub = ch.isSubagent;
+        const persona = getPersona();
+        const subLabel = isSub ? subagentCharacters.find((s) => s.id === id)?.label : undefined;
+        const tag = persona.showNameLabels ? nameTagFor(ch, subLabel) : null;
+        const spoken = bubbleFor(id);
 
         // Speech bubble (permission dots / done checkmark) — rendered here in
         // the DOM, above the label panels (OVERLAY_BUBBLE_Z_INDEX over the label panels), for every
@@ -199,8 +267,65 @@ export function ToolOverlay({
 
         // Only show the label for hovered or selected agents (unless
         // always-show is on) — the bubble renders regardless.
+        // Name tag (and whatever she is saying) above the head: the persona's
+        // always-on label, shown whenever the activity panel is not.
+        const headX = project.toScreenX(ch.x);
+        const headY = project.toScreenY(
+          ch.y +
+            (ch.state === CharacterState.TYPE ? CHARACTER_SITTING_OFFSET_PX : 0) -
+            TOOL_OVERLAY_VERTICAL_OFFSET,
+        );
+        const tagNode =
+          tag || spoken ? (
+            <div
+              className="absolute flex flex-col items-center pointer-events-none"
+              style={{
+                left: headX,
+                top: headY + 14,
+                transform: 'translate(-50%, -100%)',
+                zIndex: OVERLAY_LABEL_Z_INDEX,
+              }}
+              data-testid="name-tag"
+              data-agent-id={id}
+            >
+              {spoken && <SpeechBubble text={spoken} />}
+              {tag && (
+                <div
+                  className="flex flex-col items-center px-4 pb-1 whitespace-nowrap"
+                  style={{ background: NAME_TAG_BG }}
+                >
+                  <span
+                    className="leading-none"
+                    style={{
+                      fontSize: '15px',
+                      fontWeight: 'bold',
+                      color: tag.boss ? TEAM_LEAD_COLOR : NAME_TAG_NAME_COLOR,
+                    }}
+                  >
+                    {tag.boss ? `${BOSS_MARKER} ` : ''}
+                    {truncateLabel(tag.name, tag.role ? NAME_TAG_NAME_MAX : NAME_TAG_ROLE_MAX)}
+                  </span>
+                  {tag.role && (
+                    <span
+                      className="leading-none"
+                      style={{ fontSize: '12px', color: TEAM_ROLE_COLOR }}
+                    >
+                      {truncateLabel(tag.role, NAME_TAG_ROLE_MAX)}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : null;
+
         if (!alwaysShowOverlay && !isSelected && !isHovered) {
-          return bubbleNode && <Fragment key={id}>{bubbleNode}</Fragment>;
+          if (!bubbleNode && !tagNode) return null;
+          return (
+            <Fragment key={id}>
+              {bubbleNode}
+              {tagNode}
+            </Fragment>
+          );
         }
 
         // Position above character
@@ -219,6 +344,7 @@ export function ToolOverlay({
           return (
             <Fragment key={id}>
               {bubbleNode}
+              {tagNode}
               <div
                 className="absolute"
                 style={{ left: screenX, top: screenY, pointerEvents: 'none' }}
@@ -274,7 +400,9 @@ export function ToolOverlay({
         }
 
         // Team info
-        const teamRoleLabel = ch.isTeamLead ? 'LEAD' : ch.agentName || null;
+        // With name tags on, the panel's first line is the persona name tag.
+        const teamRoleLabel = tag ? tagLine(tag) : ch.isTeamLead ? 'LEAD' : ch.agentName || null;
+        const roleIsLead = tag ? tag.boss : !!ch.isTeamLead;
         const hasExtraLines = !!(ch.directoryName || teamRoleLabel);
 
         // Context gauge. Every agent gets one — lead, teammate, adopted,
@@ -286,6 +414,19 @@ export function ToolOverlay({
         return (
           <Fragment key={id}>
             {bubbleNode}
+            {spoken && (
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  left: screenX,
+                  top: screenY - (hasExtraLines ? 34 : 28),
+                  transform: 'translate(-50%, -100%)',
+                  zIndex: OVERLAY_LABEL_SELECTED_Z_INDEX,
+                }}
+              >
+                <SpeechBubble text={spoken} />
+              </div>
+            )}
             <div
               className="absolute flex flex-col items-center -translate-x-1/2"
               style={{
@@ -311,8 +452,8 @@ export function ToolOverlay({
                       className="overflow-hidden text-ellipsis block leading-none"
                       style={{
                         fontSize: '18px',
-                        color: ch.isTeamLead ? TEAM_LEAD_COLOR : TEAM_ROLE_COLOR,
-                        fontWeight: ch.isTeamLead ? 'bold' : undefined,
+                        color: roleIsLead ? TEAM_LEAD_COLOR : TEAM_ROLE_COLOR,
+                        fontWeight: roleIsLead || tag ? 'bold' : undefined,
                       }}
                     >
                       {teamRoleLabel}
@@ -373,6 +514,20 @@ export function ToolOverlay({
           </Fragment>
         );
       })}
+      {pinnedBubbles().map((b) => (
+        <div
+          key={`pinned-${b.id}`}
+          className="absolute pointer-events-none"
+          style={{
+            left: project.toScreenX(b.x),
+            top: project.toScreenY(b.y - TOOL_OVERLAY_VERTICAL_OFFSET),
+            transform: 'translate(-50%, -100%)',
+            zIndex: OVERLAY_LABEL_Z_INDEX,
+          }}
+        >
+          <SpeechBubble text={b.text} />
+        </div>
+      ))}
     </>
   );
 }

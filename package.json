@@ -1,12 +1,12 @@
 {
-  "name": "pixel-agents",
-  "displayName": "Pixel Agents",
-  "description": "Pixel art office where your Claude Code agents come to life as animated characters",
+  "name": "pixel-agents-underlives",
+  "displayName": "Pixel Agents (Underlives fork)",
+  "description": "Pixel art office where your Claude Code agents come to life — fork with name tags, a women-only cast and speech bubbles",
   "version": "1.5.0",
-  "publisher": "pablodelucca",
+  "publisher": "underlives",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixel-agents-hq/pixel-agents"
+    "url": "https://github.com/UnderLives/pixel-agents"
   },
   "workspaces": [
     "server",
@@ -29,7 +29,7 @@
   ],
   "main": "./dist/extension.js",
   "bin": {
-    "pixel-agents": "./dist/cli.js"
+    "pixel-agents-underlives": "./dist/cli.js"
   },
   "files": [
     "CHANGELOG.md",
@@ -40,6 +40,7 @@
     "dist/uninstall.js",
     "dist/assets/",
     "dist/webview/",
+    "dist/speech/",
     "icon.png"
   ],
   "contributes": {
@@ -83,6 +84,70 @@
           "type": "boolean",
           "default": false,
           "description": "Automatically spawn a Claude Code agent when VS Code starts, if no agents are currently running."
+        },
+        "pixel-agents.showNameLabels": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a name tag above every character: the agent's name in bold, its role below. A spawn described as \"<Name> · <domain> · <item>\" shows the name and \"domain · item\"; any other description is shown cut to fit. The lead session wears a ★ boss marker."
+        },
+        "pixel-agents.characterSet": {
+          "type": "string",
+          "enum": [
+            "all",
+            "women"
+          ],
+          "enumDescriptions": [
+            "Every bundled character (upstream behaviour).",
+            "Only the bundled characters that are women (char 1, 3, 5 and 6-10). Characters from external asset directories are always included."
+          ],
+          "default": "women",
+          "description": "Which characters new agents are drawn from. Applies to agents created after the change."
+        },
+        "pixel-agents.characterByName": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "default": {
+            "Linda": 1,
+            "Maya": 6,
+            "Nora": 5,
+            "Sacha": 10,
+            "Iris": 7,
+            "Léa": 8,
+            "Zoé": 3
+          },
+          "description": "Fixed character (char_N index) per agent name, so a named sub-agent or teammate always has the same face. Names not listed get a stable hash of their name into the allowed set."
+        },
+        "pixel-agents.speech": {
+          "type": "string",
+          "enum": [
+            "off",
+            "text",
+            "voice"
+          ],
+          "enumDescriptions": [
+            "Characters stay silent.",
+            "Speech bubbles from the speech banks.",
+            "Speech bubbles plus the line's voice file from ~/.pixel-agents/speech/<name>/ when there is one."
+          ],
+          "default": "text",
+          "description": "Whether named characters talk (lines come from the speech banks: dist/speech/*.json, overridden by ~/.pixel-agents/speech/*.json)."
+        },
+        "pixel-agents.speechVolume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.8,
+          "description": "Voice volume (0-1) when pixel-agents.speech is \"voice\"."
+        },
+        "pixel-agents.speechFillerMinutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 240,
+          "default": 4,
+          "description": "Minutes of silence after which an idle named character says a filler or a word of encouragement. 0 = never."
         }
       }
     }

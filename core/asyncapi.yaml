@@ -112,6 +112,7 @@ components:
         # Settings & config
         - $ref: '#/components/schemas/OfficeAccess'
         - $ref: '#/components/schemas/SettingsLoaded'
+        - $ref: '#/components/schemas/PersonaSettingsLoaded'
         - $ref: '#/components/schemas/BypassPermissionsUpdated'
         - $ref: '#/components/schemas/HooksStatus'
         - $ref: '#/components/schemas/HooksConsentRequest'
@@ -308,6 +309,11 @@ components:
             True when this spawn tool call carries a name, making the spawn a
             Teammate-to-be. The office must not create a Subtask sub-character
             for it — a teammate character will represent the spawn instead.
+        description:
+          type: string
+          description: >-
+            A sub-agent spawn's full description (Task/Agent `description`), untruncated,
+            for the sub-character's name tag. `status` carries a shortened copy.
 
     AgentToolDone:
       description: Agent finished executing a tool.
@@ -696,6 +702,76 @@ components:
             Persistent per-host choice whether the host's own Directories (VS
             Code's workspace folders, standalone's start directory) are listed
             in `directoriesLoaded`. Off by default.
+
+    PersonaSettingsLoaded:
+      description: >-
+        How characters present themselves: name tags, which sprites new agents
+        draw from, and what they say. Sent on connect and whenever the host's
+        settings change. Speech banks map a speaker name to its lines per
+        situation; an entry's `audio` is a file name under `audioBase/<speaker>/`.
+      type: object
+      additionalProperties: false
+      required:
+        [
+          type,
+          showNameLabels,
+          characterSet,
+          characterByName,
+          speech,
+          speechVolume,
+          speechFillerMinutes,
+          speechBanks,
+        ]
+      properties:
+        type:
+          const: personaSettingsLoaded
+        showNameLabels:
+          type: boolean
+        characterSet:
+          $ref: '#/components/schemas/CharacterSetName'
+        characterByName:
+          type: object
+          additionalProperties:
+            type: integer
+        speech:
+          $ref: '#/components/schemas/SpeechMode'
+        speechVolume:
+          type: number
+        speechFillerMinutes:
+          type: number
+        speechBanks:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: array
+              items:
+                $ref: '#/components/schemas/SpeechLine'
+        audioBase:
+          type: string
+          description: URL prefix the webview can load voice files from; absent = text only.
+
+    CharacterSetName:
+      description: Which bundled characters new agents are drawn from.
+      type: string
+      enum: [all, women]
+
+    SpeechMode:
+      description: off = silent; text = speech bubbles; voice = bubbles plus the line's audio file when it has one.
+      type: string
+      enum: ['off', text, voice]
+
+    SpeechLine:
+      type: object
+      additionalProperties: false
+      required: [id, text]
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        audio:
+          type: string
 
     BypassPermissionsUpdated:
       description: |

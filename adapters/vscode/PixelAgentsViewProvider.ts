@@ -47,7 +47,15 @@ import {
   watchLayoutFile,
   writeLayoutToFile,
 } from '../../server/src/layoutPersistence.js';
+import { setCharacterPolicy } from '../../server/src/paletteAssigner.js';
 import { PathSet } from '../../server/src/pathKey.js';
+import {
+  loadSpeechBanks,
+  normalizePersonaConfig,
+  type PersonaConfig,
+  personaSettingsMessage,
+  userSpeechDir,
+} from '../../server/src/personaSettings.js';
 import type { ConsentEffects } from '../../server/src/providers/hook/consentExecutor.js';
 import { applyConsentChoice } from '../../server/src/providers/hook/consentExecutor.js';
 import { hooksConsentRequest } from '../../server/src/providers/hook/consentGate.js';
@@ -69,6 +77,7 @@ import {
 import {
   CONFIG_KEY_AUTO_SHOW_PANEL,
   CONFIG_KEY_AUTO_SPAWN_AGENT,
+  CONFIG_SECTION_PERSONA,
   GLOBAL_KEY_ALWAYS_SHOW_LABELS,
   GLOBAL_KEY_BYPASS_PERMISSIONS,
   GLOBAL_KEY_GHOST_HEADLESS_AGENTS,
@@ -135,6 +144,14 @@ export class PixelAgentsViewProvider implements vscode.WebviewViewProvider {
     // when no webview is attached, so the next open sees the current list.
     this.context.subscriptions.push(
       vscode.workspace.onDidChangeWorkspaceFolders(() => this.sendDirectories()),
+    );
+    // Persona settings (name tags, character set, speech): the character policy must
+    // be in place before the first agent is created, which can precede the panel.
+    this.readPersonaConfig();
+    this.context.subscriptions.push(
+      vscode.workspace.onDidChangeConfiguration((e) => {
+        if (e.affectsConfiguration(CONFIG_SECTION_PERSONA)) this.sendPersonaSettings();
+      }),
     );
     this.store.on('agentAdded', (id, agent) => {
       this.sendOrBuffer({
@@ -456,7 +473,15 @@ export class PixelAgentsViewProvider implements vscode.WebviewViewProvider {
     // sendCurrentAgentStatuses + asset loaders).
     this.isWebviewReady = false;
     this.pendingBroadcasts = [];
-    webviewView.webview.options = { enableScripts: true };
+    webviewView.webview.options = {
+      enableScripts: true,
+      // The defaults (extension + workspace folders) plus the user's voice files.
+      localResourceRoots: [
+        this.extensionUri,
+        ...(vscode.workspace.workspaceFolders ?? []).map((f) => f.uri),
+        vscode.Uri.file(userSpeechDir()),
+      ],
+    };
     webviewView.webview.html = getWebviewContent(webviewView.webview, this.extensionUri);
 
     webviewView.webview.onDidReceiveMessage(async (message) => {
@@ -688,6 +713,7 @@ export class PixelAgentsViewProvider implements vscode.WebviewViewProvider {
           bypassPermissions,
           showHostDirectories,
         });
+        this.sendPersonaSettings();
 
         // One status + at most one consent ask PER PROVIDER. Install state is distinct from the hooksEnabled
         // preference, which defaults true while consent is pending. Opening the office is the moment the user can be
@@ -1067,6 +1093,35 @@ export class PixelAgentsViewProvider implements vscode.WebviewViewProvider {
     vscode.window.showInformationMessage(
       `Pixel Agents: Default layout exported as revision ${nextRevision} to ${targetPath}`,
     );
+  }
+
+  /** VS Code's `pixel-agents.*` persona settings; also installs the server's character policy. */
+  private readPersonaConfig(): PersonaConfig {
+    const cfg = vscode.workspace.getConfiguration(CONFIG_SECTION_PERSONA);
+    const keys = [
+      'showNameLabels',
+      'characterSet',
+      'characterByName',
+      'speech',
+      'speechVolume',
+      'speechFillerMinutes',
+    ] as const;
+    const persona = normalizePersonaConfig(Object.fromEntries(keys.map((k) => [k, cfg.get(k)])));
+    setCharacterPolicy(persona);
+    return persona;
+  }
+
+  /** Send the persona snapshot (re-read from settings, banks re-read from disk). */
+  private sendPersonaSettings(): void {
+    const persona = this.readPersonaConfig();
+    const webview = this.webview;
+    if (!webview || !this.isWebviewReady) return;
+    const banks = loadSpeechBanks(
+      path.join(this.extensionUri.fsPath, 'dist', 'speech'),
+      userSpeechDir(),
+    );
+    const audioBase = webview.asWebviewUri(vscode.Uri.file(userSpeechDir())).toString();
+    void webview.postMessage(personaSettingsMessage(persona, banks, audioBase));
   }
 
   private async loadAllFurnitureAssets(): Promise<LoadedAssets | null> {

@@ -214,6 +214,11 @@ export function processTranscriptLine(
             if (isTeammateSpawn) {
               (agent.teammateSpawnToolIds ??= new Set()).add(block.id);
             }
+            // The full description feeds the sub-character's name tag ("Linda · clothes ·
+            // triage"); `status` only carries a 40-character cut of it.
+            if (isSubagentSpawn && typeof block.input?.description === 'string') {
+              (agent.spawnDescriptions ??= new Map()).set(block.id, block.input.description);
+            }
             const useJsonlToolEvents = agent.hookDelivered && hasInlineTeammates(agentId, agents);
             if (!agent.hookDelivered || useJsonlToolEvents || isSubagentSpawn) {
               const runInBackground = isSubagentSpawn && block.input?.run_in_background === true;
@@ -226,6 +231,7 @@ export function processTranscriptLine(
                 permissionActive: agent.permissionSent,
                 runInBackground,
                 isTeammateSpawn: isTeammateSpawn || undefined,
+                description: agent.spawnDescriptions?.get(block.id),
               });
             }
           }
@@ -347,6 +353,7 @@ export function processTranscriptLine(
                     toolName: completedToolName,
                     runInBackground: true,
                     isTeammateSpawn: agent.teammateSpawnToolIds?.has(completedToolId) || undefined,
+                    description: agent.spawnDescriptions?.get(completedToolId),
                   });
                 }
                 // Classify the spawn right away (sidecar may lag; the periodic
@@ -488,6 +495,7 @@ export function processTranscriptLine(
               toolName: agent.activeToolNames.get(toolId),
               runInBackground: true,
               isTeammateSpawn: agent.teammateSpawnToolIds?.has(toolId) || undefined,
+              description: agent.spawnDescriptions?.get(toolId),
             });
           }
         }

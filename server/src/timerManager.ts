@@ -52,6 +52,7 @@ export function clearAgentActivity(
         toolName: agent.activeToolNames.get(toolId),
         runInBackground: true,
         isTeammateSpawn: agent.teammateSpawnToolIds?.has(toolId) || undefined,
+        description: agent.spawnDescriptions?.get(toolId),
       });
     }
   }

@@ -1,4 +1,5 @@
 import type { StateAdapter } from '../../core/src/adapter.js';
+import type { PersonaSettingsLoaded } from '../../core/src/messages.js';
 import type { HookProvider } from '../../core/src/provider.js';
 import { resendAgentActivity } from './agentActivityResend.js';
 import { buildAgentDiagnostics } from './agentDiagnostics.js';
@@ -62,6 +63,9 @@ export interface ClientMessageContext {
   onSetHooksEnabled?: SetHooksEnabledSideEffect;
   /** Reload assets after an external-asset-directory change. Needs the dist root, known only to cli.ts. */
   onReloadAssets?: ReloadAssetsSideEffect;
+  /** The persona snapshot (name tags, character set, speech banks) sent on connect.
+   *  Standalone only: the VS Code adapter sends its own from VS Code settings. */
+  persona?: () => PersonaSettingsLoaded;
   /**
    * Whether this client may change ANYTHING. An unprivileged client is
    * read-only: it may load and watch the office (`webviewReady`) and every
@@ -521,6 +525,7 @@ function handleWebviewReady(send: WsSend, ctx: ClientMessageContext): void {
   const settings = settingsSnapshot(adapter);
   const { watchAllSessions, hooksEnabled } = settings;
   send(settings);
+  if (ctx.persona) send({ ...ctx.persona() }); // spread: WsSend takes an index-signature shape
 
   // 4a. Actual install state, distinct from the hooksEnabled preference —
   // hooksEnabled defaults true while first-run consent is still pending. The

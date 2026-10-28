@@ -34,6 +34,7 @@ export type ServerMessage =
   | CarpetTilesLoaded
   | OfficeAccess
   | SettingsLoaded
+  | PersonaSettingsLoaded
   | BypassPermissionsUpdated
   | HooksStatus
   | HooksConsentRequest
@@ -134,6 +135,7 @@ export interface AgentToolStart {
   permissionActive?: boolean;
   runInBackground?: boolean;
   isTeammateSpawn?: boolean;
+  description?: string;
 }
 
 export interface AgentToolDone {
@@ -295,6 +297,28 @@ export interface SettingsLoaded {
   showAreas: boolean;
   bypassPermissions: boolean;
   showHostDirectories: boolean;
+}
+
+export interface PersonaSettingsLoaded {
+  type: 'personaSettingsLoaded';
+  showNameLabels: boolean;
+  characterSet: CharacterSetName;
+  characterByName: Record<string, number>;
+  speech: SpeechMode;
+  speechVolume: number;
+  speechFillerMinutes: number;
+  speechBanks: Record<string, Record<string, SpeechLine[]>>;
+  audioBase?: string;
+}
+
+export type CharacterSetName = 'all' | 'women';
+
+export type SpeechMode = 'off' | 'text' | 'voice';
+
+export interface SpeechLine {
+  id: string;
+  text: string;
+  audio?: string;
 }
 
 export interface BypassPermissionsUpdated {
