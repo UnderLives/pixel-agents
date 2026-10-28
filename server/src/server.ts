@@ -82,6 +82,8 @@ export class PixelAgentsServer {
      *  the old one. Refused while another standalone server is running: it
      *  would keep honouring the old token until it restarts. */
     rotateToken?: boolean;
+    /** Standalone: browsers need no token (the network is the gate). */
+    noToken?: boolean;
   }): Promise<ServerConfig> {
     const embedded = options?.embedded ?? true;
     const wantsSpa = !embedded;
@@ -147,6 +149,7 @@ export class PixelAgentsServer {
       onReloadAssets: options?.onReloadAssets,
       persona: options?.persona,
       speechAudioDir: options?.speechAudioDir,
+      noToken: !embedded && (options?.noToken ?? false),
       ptyManager: options?.ptyManager,
       allowedHosts: standalone?.allowedHosts,
     });

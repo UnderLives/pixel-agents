@@ -197,8 +197,11 @@ export function standaloneHandshakeVerdict(
   host: string | undefined,
   token: string,
   allowedHostnames: ReadonlySet<string>,
+  /** False under `--no-token`: the network (e.g. a private tailnet) is the only gate;
+   *  the Host allowlist still applies. */
+  tokenRequired = true,
 ): HandshakeVerdict {
-  if (!standaloneTokenValid(url, token)) return 'bad-token';
+  if (tokenRequired && !standaloneTokenValid(url, token)) return 'bad-token';
   const name = normalizeHostname(host);
   if (name === null || !allowedHostnames.has(name)) return 'untrusted-host';
   return 'privileged';

@@ -56,23 +56,14 @@ export class TerminalConnection {
     this.handlers.onStatusChange(this.attempt === 0 ? 'connecting' : 'reconnecting');
 
     // The token is the one this page was opened with (transport/serverToken.ts);
-    // the server never hands it out over HTTP. A bare page was already told the
-    // terminal is unavailable, so reaching here without one is a defensive stop,
-    // not something a retry could fix.
-    if (serverToken === null) {
-      console.error(
-        '[Webview] Terminal: this page has no server token (open the URL the CLI printed).',
-      );
-      this.handlers.onStatusChange('closed');
-      return;
-    }
-
-    // The token rides the handshake query exactly as it does on /ws (the
-    // server's request log redacts it), so both sockets pass the same gate.
+    // the server never hands it out over HTTP. A server run with --no-token needs
+    // none: the handshake then goes without it and the server decides. The token
+    // rides the handshake query exactly as it does on /ws (the server's request
+    // log redacts it), so both sockets pass the same gate.
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const url = `${protocol}//${window.location.host}${TERMINAL_WS_PREFIX}/${String(
       this.agentId,
-    )}?token=${encodeURIComponent(serverToken)}`;
+    )}${serverToken === null ? '' : `?token=${encodeURIComponent(serverToken)}`}`;
     const socket = new WebSocket(url);
     this.socket = socket;
 

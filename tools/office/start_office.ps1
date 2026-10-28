@@ -1,27 +1,25 @@
 <#
 .SYNOPSIS
-  Start the Pixel Agents office as a standalone server reachable from the phone over Tailscale only.
+  Start the Underlivers Agents office as a standalone server reachable from the phone over Tailscale only.
 
 .DESCRIPTION
   Runs this fork's CLI (dist/cli.js) bound to the machine's Tailscale IPv4 address (never 0.0.0.0,
   never the LAN), on a fixed port, with the embedded terminal on, from the game folder (so
-  "+ Agent" starts the boss there). Writes the tokened URL to ~/.pixel-agents/office_url.txt,
-  readable by the current user only, and prints it.
+  "+ Agent" starts the boss there), with --no-token: access is protected by Tailscale alone.
+  Writes the URL (http://<tailscale-ip>:<port>/) to ~/.pixel-agents/office_url.txt and prints it.
 
-  The token in the URL is the key: whoever has it (and can reach the tailnet) can run commands as
-  you through the office's terminal. Rotate it with -RotateToken (stop the office first).
+  Without a token, every machine of this tailnet has a shell on this PC: share the tailnet with
+  nobody.
 
-  If the office already runs on that port, the script only rewrites the URL file.
+  If the office already runs, the script only rewrites the URL file.
 
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File tools\office\start_office.ps1
   powershell -ExecutionPolicy Bypass -File tools\office\start_office.ps1 -Stop
-  powershell -ExecutionPolicy Bypass -File tools\office\start_office.ps1 -Stop; powershell -File tools\office\start_office.ps1 -RotateToken
 #>
 param(
   [int]$Port = 47231,
   [string]$ProjectDir = 'C:\Users\hight\Documents\Unreal Projects\Underlives',
-  [switch]$RotateToken,
   [switch]$Stop
 )
 $ErrorActionPreference = 'Stop'
@@ -66,28 +64,22 @@ try { $dnsName = ((& $ts status --json) | Out-String | ConvertFrom-Json).Self.DN
 
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 
-function Write-UrlFile([string]$token) {
-  $lines = @("http://${ip}:${Port}/?token=$token")
-  if ($dnsName) { $lines += "http://${dnsName}:${Port}/?token=$token" }
+function Write-UrlFile {
+  $lines = @("http://${ip}:${Port}/")
+  if ($dnsName) { $lines += "http://${dnsName}:${Port}/" }
   Set-Content -Path $urlFile -Value $lines -Encoding utf8
-  # Private: the token is a key to a shell.
-  icacls $urlFile /inheritance:r /grant:r "${env:USERNAME}:(R,W)" | Out-Null
-  Write-Output "Office: $($lines[0])"
-  if ($dnsName) { Write-Output "        $($lines[1])" }
-  Write-Output "(saved in $urlFile, readable by $env:USERNAME only)"
+  Write-Output "Underlivers Agents office: $($lines[0])"
+  if ($dnsName) { Write-Output "                           $($lines[1])" }
+  Write-Output "(saved in $urlFile; no token: every machine of this tailnet has a shell here)"
 }
 
-$running = Get-OfficeProcess
-if ($running) {
-  if ($RotateToken) { throw "The office is running (pid $($running.Id)): stop it first with -Stop, then -RotateToken." }
-  $token = (Get-Content (Join-Path $stateDir 'standalone-token') -Raw).Trim()
-  Write-UrlFile $token
+if (Get-OfficeProcess) {
+  Write-UrlFile
   return
 }
 
-$cliArgs = "--host $ip --port $Port"
+$cliArgs = "--host $ip --port $Port --no-token"
 if ($dnsName) { $cliArgs += " --allowed-host $dnsName" }
-if ($RotateToken) { $cliArgs += ' --rotate-token' }
 Remove-Item $log, "$log.err" -ErrorAction SilentlyContinue
 
 # Detached through WMI: the office must not inherit this console's handles (a caller waiting on
@@ -101,20 +93,17 @@ if ($r.ReturnValue -ne 0) { throw "Could not start the office (Win32_Process.Cre
 $p = Get-Process -Id $r.ProcessId
 Set-Content -Path $pidFile -Value $p.Id
 
-# The CLI prints "Pixel Agents server running at http://<host>:<port>/?token=<token>".
+# The CLI prints "... server running at http://<host>:<port>/" once it listens.
 $deadline = (Get-Date).AddSeconds(30)
-$token = $null
-while ((Get-Date) -lt $deadline -and -not $token) {
+$up = $false
+while ((Get-Date) -lt $deadline -and -not $up) {
   Start-Sleep -Milliseconds 500
   if ($p.HasExited) { break }
-  if (Test-Path $log) {
-    $m = Select-String -Path $log -Pattern 'running at http://\S+\?token=([0-9a-fA-F-]+)' | Select-Object -Last 1
-    if ($m) { $token = $m.Matches[0].Groups[1].Value }
-  }
+  if (Test-Path $log) { $up = [bool](Select-String -Path $log -Pattern 'server running at http://' -Quiet) }
 }
-if (-not $token) {
+if (-not $up) {
   Write-Output (Get-Content $log, "$log.err" -ErrorAction SilentlyContinue | Select-Object -Last 30)
   throw "The office did not start (log: $log)."
 }
-Write-UrlFile $token
+Write-UrlFile
 Write-Output "Office running (pid $($p.Id)); log: $log. Stop: start_office.ps1 -Stop"

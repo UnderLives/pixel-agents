@@ -41,6 +41,8 @@ export interface HttpServerOptions {
   port?: number;
   /** Bearer auth token for hook and WebSocket endpoints */
   token: string;
+  /** Standalone `--no-token`: browser sockets need no `?token=` (hooks still use the Bearer token). */
+  noToken?: boolean;
   /** AgentStateStore for WebSocket broadcast piping */
   store: AgentStateStore;
   /** Shared agent lifecycle core (for toggle side effects + standalone restore). Optional in embedded mode. */
@@ -126,6 +128,7 @@ export async function createHttpServer(options: HttpServerOptions): Promise<Http
   registerWebSocketRoute(app, options, allowedHostnames);
   registerTerminalRoutes(app, {
     token: options.token,
+    tokenRequired: !options.noToken,
     allowedHostnames,
     ptyManager: options.ptyManager,
   });
@@ -219,6 +222,7 @@ function registerWebSocketRoute(
         request.headers.host,
         options.token,
         allowedHostnames,
+        !options.noToken,
       );
       privileged = verdict === 'privileged';
       if (verdict === 'untrusted-host') {

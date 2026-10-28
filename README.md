@@ -34,13 +34,14 @@ The architecture is fully agent-agnostic and editor-agnostic: a typed `HookProvi
 
 ![Pixel Agents screenshot](webview-ui/public/office.png)
 
-## Underlives fork
+## Underlivers Agents (the Underlives fork)
 
-This is the Underlives fork of Pixel Agents (branch `underlives`, based on
-upstream v1.5.0). It installs as its own extension, **`underlives.pixel-agents-underlives`**, so a
-marketplace update of `pablodelucca.pixel-agents` never replaces it. Everything it adds sits behind
-settings; with `characterSet: "all"`, `speech: "off"`, `bossCharacter: -1`, `bossArea: ""` and no
-`characterByName` it behaves like upstream.
+**Underlivers Agents** is the Underlives fork of Pixel Agents (branch `underlives`, based on
+upstream v1.5.0), MIT like the original: Pixel Agents is © Pablo De Lucca and contributors (see
+[LICENSE](LICENSE)). It installs as its own extension, **`underlives.underlivers-agents`** (panel
+"Underlivers Agents"), so a marketplace update of `pablodelucca.pixel-agents` never replaces it.
+Everything it adds sits behind settings; with `characterSet: "all"`, `speech: "off"`,
+`bossCharacter: -1`, `bossArea: ""` and no `characterByName` it behaves like upstream.
 
 ### What it adds
 
@@ -102,22 +103,22 @@ from a `persona` object in `~/.pixel-agents/config.json`, re-read on every page 
 
 `tools/office/start_office.ps1` starts `dist/cli.js` bound to this machine's **Tailscale IPv4
 address only** (never `0.0.0.0`, never the LAN), port 47231, embedded terminal on, from the game
-folder, and writes the tokened URL to `~/.pixel-agents/office_url.txt` (readable by the user only).
-`-Stop` stops it.
+folder, with **`--no-token`**: access is protected by Tailscale alone. It writes the URL
+(`http://<tailscale-ip>:47231/`) to `~/.pixel-agents/office_url.txt`. `-Stop` stops it.
 
-- **The token is a key.** Anyone with the URL who can reach the tailnet gets a shell as you through
-  the office terminal. Never paste it anywhere; it is not in git.
-- **Tailscale only.** The server listens on the 100.x address; the phone must be on the same
-  tailnet. Plain HTTP inside the tailnet (WireGuard-encrypted end to end).
-- **Rotate the token**: `start_office.ps1 -Stop`, then `start_office.ps1 -RotateToken` (every old
-  URL stops working; reopen the new one on each device).
+- **Without a token, every machine of this tailnet has a shell on this PC: share the tailnet with
+  nobody.**
+- The server listens on the 100.x address only; the Host allowlist still refuses other names
+  (DNS rebinding). Traffic inside the tailnet is WireGuard-encrypted.
+- `--no-token` is a CLI flag of this fork (`node dist/cli.js --host <ip> --no-token`); without it
+  the server keeps upstream's token (`?token=` URL, `--rotate-token` to revoke one).
 - **Talking to the boss from the phone**: `+ Agent` in the browser starts a new `claude` session in
   the game folder, in a terminal the phone sees and types into. A session already open in VS Code
   **cannot** be attached: the office shows it (and its sub-agents), but only sessions the server
   started have a terminal there. To continue that conversation from the phone, close it in VS Code
   and run `/resume` inside a session started with `+ Agent`.
 - **Start at logon (optional)**:
-  `Register-ScheduledTask -TaskName "Pixel Agents office" -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME) -Action (New-ScheduledTaskAction -Execute powershell.exe -Argument '-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "C:\Users\hight\Desktop\pixel-agents\tools\office\start_office.ps1"') -Settings (New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit 0)`
+  `Register-ScheduledTask -TaskName "Underlivers Agents office" -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME) -Action (New-ScheduledTaskAction -Execute powershell.exe -Argument '-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "C:\Users\hight\Desktop\pixel-agents\tools\office\start_office.ps1"') -Settings (New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit 0)`
   (add a delay or retry if Tailscale connects after logon).
 
 ### Build, install, update, uninstall
@@ -126,13 +127,13 @@ folder, and writes the tokened URL to `~/.pixel-agents/office_url.txt` (readable
 npm install
 npm run package                       # extension + CLI + webview, into dist/
 npx @vscode/vsce package --no-dependencies --allow-missing-repository --skip-license
-code --install-extension pixel-agents-underlives-1.5.0.vsix --force
+code --install-extension underlivers-agents-1.5.0.vsix --force
 ```
 
 Update: pull, rebuild, repackage, reinstall with `--force`. Uninstall:
-`code --uninstall-extension underlives.pixel-agents-underlives`.
+`code --uninstall-extension underlives.underlivers-agents`.
 
-The fork has its own panel ("Pixel Agents (Underlives)") and commands, so it can sit next to
+The fork has its own panel ("Underlivers Agents") and commands, so it can sit next to
 upstream's extension, but both share the hook script (`~/.pixel-agents/hooks/claude-hook.js`, the
 same file), the `pixel-agents.*` settings and `~/.pixel-agents/`: **disable** upstream's extension
 (Extensions view → Pixel Agents → Disable) rather than uninstalling it. Uninstalling either one runs

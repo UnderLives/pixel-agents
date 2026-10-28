@@ -60,6 +60,9 @@ export interface CliArgs {
   allowedHosts: string[];
   /** --rotate-token: replace the persisted server token before starting. */
   rotateToken: boolean;
+  /** --no-token: browsers get full access without the token; only a private network
+   *  (e.g. bound to a Tailscale address) may protect the office then. */
+  noToken: boolean;
 }
 
 /** Thrown by parseArgs on an invalid --port. Kept separate from process.exit so
@@ -73,6 +76,7 @@ export function parseArgs(argv: string[]): CliArgs {
     terminal: true,
     allowedHosts: [],
     rotateToken: false,
+    noToken: false,
   };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--port' || argv[i] === '-p') {
@@ -107,6 +111,8 @@ export function parseArgs(argv: string[]): CliArgs {
       i++;
     } else if (argv[i] === '--rotate-token') {
       args.rotateToken = true;
+    } else if (argv[i] === '--no-token') {
+      args.noToken = true;
     } else if (argv[i] === '--no-terminal') {
       args.terminal = false;
     } else if (argv[i] === '--help') {
@@ -118,6 +124,9 @@ Options:
   --allowed-host <name> Also accept the tokened URL at this host name, e.g. a
                         reverse proxy's (Tailscale Serve). Repeatable. Without
                         it, only localhost and a specific --host are privileged
+  --no-token            No token in the browser URL: every client that reaches the
+                        bind address gets full access (terminal = a shell). Only
+                        with a private network as the gate (a Tailscale address).
   --rotate-token        Replace the server token. Every URL that carried the
                         old one (bookmarks, other devices) stops working
   --no-terminal         Disable the embedded terminal (watch agents only; no
@@ -361,6 +370,7 @@ async function main(): Promise<void> {
       ptyManager,
       allowedHosts: args.allowedHosts,
       rotateToken: args.rotateToken,
+      noToken: args.noToken,
     });
     currentConfig = { port: config.port, token: config.token };
     if (args.rotateToken) {
@@ -434,7 +444,9 @@ async function main(): Promise<void> {
     const displayHost =
       args.host === '0.0.0.0' || args.host === '::' || args.host === '' ? '127.0.0.1' : args.host;
     console.log(
-      `\n  Pixel Agents server running at http://${displayHost}:${config.port}/?token=${config.token}\n`,
+      args.noToken
+        ? `\n  Underlivers Agents server running at http://${displayHost}:${config.port}/ (no token: whoever reaches this address has full access)\n`
+        : `\n  Pixel Agents server running at http://${displayHost}:${config.port}/?token=${config.token}\n`,
     );
 
     // ── Graceful shutdown ──

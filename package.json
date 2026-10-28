@@ -1,7 +1,7 @@
 {
-  "name": "pixel-agents-underlives",
-  "displayName": "Pixel Agents (Underlives fork)",
-  "description": "Pixel art office where your Claude Code agents come to life — fork with name tags, a women-only cast and speech bubbles",
+  "name": "underlivers-agents",
+  "displayName": "Underlivers Agents",
+  "description": "Underlivers Agents: a fork of Pixel Agents (MIT) where your Claude Code agents work in a pixel office, with name tags, an all-women team, a boss and speech bubbles",
   "version": "1.5.0",
   "publisher": "underlives",
   "repository": {
@@ -29,7 +29,7 @@
   ],
   "main": "./dist/extension.js",
   "bin": {
-    "pixel-agents-underlives": "./dist/cli.js"
+    "underlivers-agents": "./dist/cli.js"
   },
   "files": [
     "CHANGELOG.md",
@@ -46,34 +46,34 @@
   "contributes": {
     "commands": [
       {
-        "command": "pixel-agents-underlives.showPanel",
-        "title": "Pixel Agents (Underlives): Show Panel"
+        "command": "underlivers-agents.showPanel",
+        "title": "Underlivers Agents: Show Panel"
       },
       {
-        "command": "pixel-agents-underlives.exportDefaultLayout",
-        "title": "Pixel Agents (Underlives): Export Layout as Default"
+        "command": "underlivers-agents.exportDefaultLayout",
+        "title": "Underlivers Agents: Export Layout as Default"
       }
     ],
     "viewsContainers": {
       "panel": [
         {
-          "id": "pixel-agents-underlives-panel",
-          "title": "Pixel Agents (Underlives)",
+          "id": "underlivers-agents-panel",
+          "title": "Underlivers Agents",
           "icon": "$(window)"
         }
       ]
     },
     "views": {
-      "pixel-agents-underlives-panel": [
+      "underlivers-agents-panel": [
         {
           "type": "webview",
-          "id": "pixel-agents-underlives.panelView",
-          "name": "Pixel Agents"
+          "id": "underlivers-agents.panelView",
+          "name": "Underlivers Agents"
         }
       ]
     },
     "configuration": {
-      "title": "Pixel Agents (Underlives fork)",
+      "title": "Underlivers Agents",
       "properties": {
         "pixel-agents.autoShowPanel": {
           "type": "boolean",

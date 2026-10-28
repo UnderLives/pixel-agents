@@ -44,6 +44,6 @@ export const CONFIG_KEY_AUTO_SPAWN_AGENT = 'pixel-agents.autoSpawnAgent';
 // The fork's own view/command ids, so it can be installed next to upstream's extension
 // (same ids from two extensions: VS Code registers only one panel). Settings keep the
 // shared `pixel-agents.*` names.
-export const VIEW_ID = 'pixel-agents-underlives.panelView';
-export const COMMAND_SHOW_PANEL = 'pixel-agents-underlives.showPanel';
-export const COMMAND_EXPORT_DEFAULT_LAYOUT = 'pixel-agents-underlives.exportDefaultLayout';
+export const VIEW_ID = 'underlivers-agents.panelView';
+export const COMMAND_SHOW_PANEL = 'underlivers-agents.showPanel';
+export const COMMAND_EXPORT_DEFAULT_LAYOUT = 'underlivers-agents.exportDefaultLayout';

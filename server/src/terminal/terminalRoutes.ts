@@ -30,6 +30,8 @@ import type { PtySessionManager } from './ptySessionManager.js';
 
 export interface TerminalRoutesOptions {
   token: string;
+  /** False under `--no-token` (see wsAuth.standaloneHandshakeVerdict). */
+  tokenRequired?: boolean;
   /** Host names a privileged handshake may arrive under (wsAuth.privilegedHostnames). */
   allowedHostnames: ReadonlySet<string>;
   ptyManager?: PtySessionManager;
@@ -70,6 +72,7 @@ export function registerTerminalRoutes(app: FastifyInstance, options: TerminalRo
         request.headers.host,
         options.token,
         options.allowedHostnames,
+        options.tokenRequired ?? true,
       );
       if (verdict === 'bad-token') {
         socket.close(WS_CLOSE_UNAUTHORIZED, 'unauthorized');
