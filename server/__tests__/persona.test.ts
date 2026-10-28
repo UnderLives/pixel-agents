@@ -176,6 +176,16 @@ describe('persona settings', () => {
       personaSettingsMessage({ ...PERSONA_DEFAULTS, speech: 'text' }, banks, '/x').audioBase,
     ).toBeUndefined();
   });
+
+  it('the adult register only leaves the server when speechSpicy is on', () => {
+    const banks = {
+      Linda: { filler: [{ id: 'f', text: 'Hop.' }], coquine: [{ id: 'c', text: 'Coquin.' }] },
+    };
+    const off = personaSettingsMessage({ ...PERSONA_DEFAULTS, speechSpicy: false }, banks);
+    expect(Object.keys(off.speechBanks.Linda)).toEqual(['filler']);
+    const on = personaSettingsMessage({ ...PERSONA_DEFAULTS, speechSpicy: true }, banks);
+    expect(Object.keys(on.speechBanks.Linda)).toEqual(['filler', 'coquine']);
+  });
 });
 
 describe('loadSpeechBanks', () => {

@@ -1105,6 +1105,7 @@ export class PixelAgentsViewProvider implements vscode.WebviewViewProvider {
       'speech',
       'speechVolume',
       'speechFillerMinutes',
+      'speechSpicy',
       'bossName',
       'bossCharacter',
       'bossArea',

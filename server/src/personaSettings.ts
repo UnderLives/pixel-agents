@@ -34,6 +34,11 @@ export interface PersonaConfig {
   speechVolume: number;
   /** Minutes of silence before an idle named character says a filler line; 0 = never. */
   speechFillerMinutes: number;
+  /**
+   * Adult register: the banks' `coquine` lines are mixed into fillers and visit
+   * answers. Off = those lines never leave the server.
+   */
+  speechSpicy: boolean;
   /** Name on the lead session's tag. */
   bossName: string;
   /** char_N the lead wears whatever the character set; -1 = drawn like any agent. */
@@ -69,6 +74,8 @@ export const PERSONA_DEFAULTS: PersonaConfig = {
   speech: 'text',
   speechVolume: 0.8,
   speechFillerMinutes: 4,
+  // The owner's choice for his office (2026-10-28); off strips the register entirely.
+  speechSpicy: true,
   // The lead: Aytaç, in the Metro City suit (char_0), in his own "Direction" office.
   bossName: 'Aytaç',
   bossCharacter: 0,
@@ -101,6 +108,7 @@ export function normalizePersonaConfig(raw: unknown): PersonaConfig {
       : PERSONA_DEFAULTS.speech,
     speechVolume: num(r.speechVolume, 0, 1, PERSONA_DEFAULTS.speechVolume),
     speechFillerMinutes: num(r.speechFillerMinutes, 0, 240, PERSONA_DEFAULTS.speechFillerMinutes),
+    speechSpicy: typeof r.speechSpicy === 'boolean' ? r.speechSpicy : PERSONA_DEFAULTS.speechSpicy,
     bossName:
       typeof r.bossName === 'string' && r.bossName.trim()
         ? r.bossName.trim().slice(0, 40)
@@ -218,6 +226,18 @@ export function loadSpeechBanks(
   return banks;
 }
 
+/** The situation holding the adult register (see PersonaConfig.speechSpicy). */
+export const SPICY_SITUATION = 'coquine';
+
+function withoutSpicy(banks: SpeechBanks): SpeechBanks {
+  const out: SpeechBanks = {};
+  for (const [speaker, situations] of Object.entries(banks)) {
+    const { [SPICY_SITUATION]: _spicy, ...rest } = situations;
+    out[speaker] = rest;
+  }
+  return out;
+}
+
 export function personaSettingsMessage(
   config: PersonaConfig,
   banks: SpeechBanks,
@@ -226,7 +246,7 @@ export function personaSettingsMessage(
   return {
     type: 'personaSettingsLoaded',
     ...config,
-    speechBanks: config.speech === 'off' ? {} : banks,
+    speechBanks: config.speech === 'off' ? {} : config.speechSpicy ? banks : withoutSpicy(banks),
     audioBase: config.speech === 'voice' ? audioBase : undefined,
   };
 }

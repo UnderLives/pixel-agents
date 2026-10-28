@@ -18,6 +18,8 @@ export const SITUATIONS = [
   'error',
   'filler',
   'motivation',
+  // Adult register, only present in the banks when pixel-agents.speechSpicy is on.
+  'coquine',
   // The boss's own: walking over to an employee, and congratulating one who finished.
   'visit',
   'praise',
@@ -37,6 +39,7 @@ const CHANCE: Record<Situation, number> = {
   error: 1,
   filler: 1,
   motivation: 1,
+  coquine: 1,
   visit: 1,
   praise: 1,
 };

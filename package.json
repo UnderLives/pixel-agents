@@ -149,6 +149,11 @@
           "default": 4,
           "description": "Minutes of silence after which an idle named character says a filler or a word of encouragement. 0 = never."
         },
+        "pixel-agents.speechSpicy": {
+          "type": "boolean",
+          "default": true,
+          "description": "Adult register: idle fillers and answers to the boss's visits sometimes come from the banks' \"coquine\" lines (crude, explicit, fictional adults). Off: those lines are never sent to the office."
+        },
         "pixel-agents.bossName": {
           "type": "string",
           "default": "Aytaç",

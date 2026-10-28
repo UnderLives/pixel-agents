@@ -9,13 +9,15 @@
 
 import type { OfficeState } from '../office/engine/officeState.js';
 import { foldName, getPersona } from './personaState.js';
-import { showBubble, speak, speakerOf } from './speechRuntime.js';
+import { hasSpicy, showBubble, speak, speakerOf } from './speechRuntime.js';
 
 /** Seconds the boss stands at a desk. */
 const VISIT_STAY_MIN_SEC = 4;
 const VISIT_STAY_RANGE_SEC = 3;
 /** Delay before the employee answers the boss. */
 const REPLY_DELAY_MS = 1_600;
+/** Odds that a visit's answer comes from the adult register when it is on. */
+const SPICY_REPLY_CHANCE = 0.35;
 /** A new employee gets her first visit once she has reached her desk. */
 const NEW_EMPLOYEE_VISIT_DELAY_MS = 6_000;
 /** Never two visits closer than this, whatever triggers them. */
@@ -62,9 +64,19 @@ export function attachBossRounds(os: OfficeState): void {
     if (!name) return;
     speak(bossId, 'visit', { vars: { name }, force: true });
     setTimeout(() => {
-      if (os.characters.has(employeeId)) {
-        speak(employeeId, 'motivation', { force: true, vars: { name: getPersona().bossName } });
+      if (!os.characters.has(employeeId)) return;
+      // With the adult register she sometimes flirts instead, and the boss answers the game.
+      if (
+        hasSpicy(employeeId) &&
+        Math.random() < SPICY_REPLY_CHANCE &&
+        speak(employeeId, 'coquine', { force: true })
+      ) {
+        setTimeout(() => {
+          if (os.characters.has(bossId)) speak(bossId, 'coquine', { force: true, vars: { name } });
+        }, REPLY_DELAY_MS * 2);
+        return;
       }
+      speak(employeeId, 'motivation', { force: true, vars: { name: getPersona().bossName } });
     }, REPLY_DELAY_MS);
   };
 }

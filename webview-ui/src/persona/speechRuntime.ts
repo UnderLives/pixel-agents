@@ -141,7 +141,20 @@ export function tickFillers(present: ReadonlySet<number>, now = Date.now()): voi
   if (quietest === null || now - quietSince < minutes * 60_000) return;
   // Count it as heard either way, so a speaker with no filler lines doesn't block the others.
   lastHeard.set(quietest, now);
-  speak(quietest, Math.random() < 1 / 3 ? 'motivation' : 'filler', { now });
+  speak(quietest, fillerSituation(quietest), { now });
+}
+
+/** Whether a character's bank has the adult register (the server sends it only when it is on). */
+export function hasSpicy(charId: number): boolean {
+  const name = speakerOf(charId);
+  return !!name && !!bankFor(name)?.coquine?.length;
+}
+
+/** Idle line: encouragement one time in three; with the adult register, fillers and it share the rest. */
+function fillerSituation(charId: number): Situation {
+  const roll = Math.random();
+  if (roll < 1 / 3) return 'motivation';
+  return hasSpicy(charId) && roll < 2 / 3 ? 'coquine' : 'filler';
 }
 
 function playVoice(url: string, volume: number): void {
