@@ -60,9 +60,12 @@ def instruct_for(speaker, situation):
     return INSTRUCT.get(speaker, 'warm, friendly')
 
 
-def to_ogg(ffmpeg, wav):
+def to_ogg(ffmpeg, wav, final_dir=None):
     # Opus at 48 kb/s: speech stays clean and the full banks fit in ~150 MB instead of 1 GB+.
-    ogg = wav[:-4] + '.ogg'
+    # ul-voice.exe opens its output path with a narrow fopen: a speaker folder like 'léa' or
+    # 'aytaç' made every line fail (2026-10-28). The WAV is rendered under an ASCII folder and the
+    # OGG lands in the speaker's real folder here, where Python handles Unicode paths.
+    ogg = os.path.join(final_dir, os.path.basename(wav)[:-4] + '.ogg') if final_dir else wav[:-4] + '.ogg'
     # Qwen3-TTS leaves ~1.2 s of silence before and ~1 s after the voice: trimmed, so the voice
     # starts with the bubble (a little tail is kept).
     trim = ('silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.05,areverse,'
@@ -122,12 +125,14 @@ def main():
         spk_b64 = base64.b64encode(open(spk, 'rb').read()).decode()
         out_dir = os.path.join(OUT_ROOT, speaker.lower())
         os.makedirs(out_dir, exist_ok=True)
+        ren_dir = os.path.join(OUT_ROOT, '_render', slug(speaker))
+        os.makedirs(ren_dir, exist_ok=True)
         n = 0
         for situation, lines in bank['situations'].items():
             for item in lines:
                 text = item if isinstance(item, str) else item['text']
                 lid = item.get('id') if isinstance(item, dict) and item.get('id') else line_id(text)
-                out = os.path.join(out_dir, f'{lid}.wav')
+                out = os.path.join(ren_dir, f'{lid}.wav')
                 done = any(os.path.exists(os.path.join(out_dir, lid + e)) for e in AUDIO_EXTS)
                 if done or not spoken(text, speaker):
                     continue
@@ -142,6 +147,7 @@ def main():
                     'lang': 'french',
                     'seed': int(lid[:6], 16),
                     'out': out.replace('\\', '/'),
+                    'final_dir': out_dir,
                 })
         print(f'{speaker}: {n} line(s) to render')
     if not jobs:
@@ -175,7 +181,7 @@ def main():
             seconds += reply.get('seconds', 0)
             gpu_ms += reply.get('ms', 0)
             if ffmpeg:
-                conversions.append(pool.submit(to_ogg, ffmpeg, by_id[reply['id']]['out']))
+                conversions.append(pool.submit(to_ogg, ffmpeg, by_id[reply['id']]['out'], by_id[reply['id']]['final_dir']))
             if (i + 1) % 200 == 0:
                 print(f'  {i + 1}/{len(jobs)} in {time.time() - t0:.0f} s', flush=True)
         else:

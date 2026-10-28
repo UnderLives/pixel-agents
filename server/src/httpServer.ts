@@ -107,7 +107,11 @@ export async function createHttpServer(options: HttpServerOptions): Promise<Http
       prefix: '/',
     });
     // Voice files for the speech bubbles (the webview plays /speech-audio/<speaker>/<id>.ogg).
-    if (options.speechAudioDir && fs.existsSync(options.speechAudioDir)) {
+    // The folder is created rather than tested: a server started before the first voices were
+    // rendered had no route at all, and every audio request got index.html back (2026-10-28,
+    // "no sound on any device"). Banks are re-read on each connect, so a page reload is enough.
+    if (options.speechAudioDir) {
+      fs.mkdirSync(options.speechAudioDir, { recursive: true });
       await app.register(fastifyStatic, {
         root: options.speechAudioDir,
         prefix: '/speech-audio/',

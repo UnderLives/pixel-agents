@@ -63,11 +63,17 @@ Everything it adds sits behind settings; with `characterSet: "all"`, `speech: "o
   comes in he congratulates her.
 - **Speech.** Characters with a speech bank talk in bubbles: on starting a task, building, waiting
   for the shared lock, reading, editing, running the game, finishing, asking permission, plus idle
-  fillers and encouragements. Lines are picked at random with no repeat among the speaker's last 20. Banks are pre-written JSON (`speech/<speaker>.json`, French, 10 lines per situation to start);
+  fillers and encouragements. Lines are picked at random with no repeat among the speaker's last 20. Banks are pre-written JSON (`speech/<speaker>.json`, French, 60-100 lines per situation);
   nothing is generated at run time. With `speech: "voice"`, a line also plays
-  `~/.pixel-agents/speech/<speaker>/<id>.wav|ogg|mp3` when that file exists
+  `~/.pixel-agents/speech/<speaker>/<id>.ogg|wav|mp3` when that file exists
   (`id` = first 10 hex of the SHA-1 of the line's text). Banks in `~/.pixel-agents/speech/*.json`
   replace the bundled one of the same speaker.
+- **Adult register (`speechSpicy`, on by default here).** Each employee's bank also has a
+  `coquine` situation: crude, explicit, playful flirting with the boss (fictional adult characters).
+  When on, idle fillers draw from it one time in three and about a third of the answers to a boss
+  visit come from it, and the boss answers the game (a short `coquine` bank of his own: amused,
+  never crude) before sending her back to work. Off: the server strips those lines and they never
+  reach the page.
 
 ### Settings (defaults of this fork)
 
@@ -79,6 +85,7 @@ Everything it adds sits behind settings; with `characterSet: "all"`, `speech: "o
 | `pixel-agents.speech`              | `"text"`                                                            | `off` \| `text` \| `voice` |
 | `pixel-agents.speechVolume`        | `0.8`                                                               | 0-1                        |
 | `pixel-agents.speechFillerMinutes` | `4`                                                                 | 0 = no fillers             |
+| `pixel-agents.speechSpicy`         | `true`                                                              | adult `coquine` register   |
 | `pixel-agents.bossName`            | `"Aytaç"`                                                           |                            |
 | `pixel-agents.bossCharacter`       | `0`                                                                 | -1 = none                  |
 | `pixel-agents.bossArea`            | `"Direction"`                                                       | "" = upstream seating      |
@@ -97,7 +104,27 @@ from a `persona` object in `~/.pixel-agents/config.json`, re-read on every page 
   (llama-server, `http://127.0.0.1:8091/v1/chat/completions`), with simple semantic de-duplication,
   varied lengths and openings, and a tone filter (every speaker is motivating; each has her style).
 - `gen_voices.py`: renders every line with its speaker's `.spk` through the Underlives voice runtime
-  (`ul-voice.exe`, qwentts.cpp) into `~/.pixel-agents/speech/<speaker>/`. GPU recommended.
+  (`ul-voice.exe`, qwentts.cpp) into `~/.pixel-agents/speech/<speaker>/`, then converts each to Ogg
+  Opus 48 kb/s with ffmpeg (`--wav` keeps WAV). GPU recommended. `coquine` lines get their own
+  delivery (sultry and teasing; amused for the boss). Lines with a `{name}` placeholder (most of the
+  boss's `visit`/`praise`) stay text-only.
+
+**Regenerating** (from the repo root; both scripts are incremental: they keep existing lines and
+skip lines that already have audio, so re-running only adds what is missing):
+
+```sh
+# 1. a local Qwen (the 35B-A3B of Underlives' Tools/ModLoc also works, with worse French), thinking off, 8 slots
+llama-server -m Huihui-Qwen3.8-27B-abliterated-UD-DW-Q4_K_M.gguf -ngl 99 -fa on -np 8 -c 32768 --reasoning-budget 0 --port 8091
+# 2. lines: one process per speaker in parallel (each writes its own bank after every situation)
+for n in Linda Maya Nora Sacha Iris Léa Zoé Aytaç; do python -I tools/speech/gen_lines.py --speakers "$n" & done; wait
+# 3. stop llama-server (it holds ~16 GB of VRAM), then voices
+python -I tools/speech/gen_voices.py
+```
+
+The audio is not in git (about @@SIZE@@ for @@COUNT@@ files): it lives in
+`~/.pixel-agents/speech/<speaker>/<id>.ogg`, where both the extension and the standalone server
+read it. To hear it, set `pixel-agents.speech` to `"voice"` in VS Code, or `"speech": "voice"` in
+the `persona` object of `~/.pixel-agents/config.json` for the standalone server (reload the page).
 
 ### Phone access: the standalone office over Tailscale
 
