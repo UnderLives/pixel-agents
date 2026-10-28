@@ -537,7 +537,9 @@ export function useExtensionMessages(
           const subId = os.addSubagent(
             id,
             toolId,
-            parsed.named ? paletteForNameNow(parsed.name, getLoadedCharacterCount()) : undefined,
+            // Named: her own face. Unnamed: a face drawn from the description (never the
+            // boss's suit). Before persona settings arrive: the parent's, as upstream.
+            paletteForNameNow(parsed.name || toolId, getLoadedCharacterCount()),
           );
           if (parsed.named) setSpeaker(subId, parsed.name);
           if (isNew) {
@@ -689,7 +691,11 @@ export function useExtensionMessages(
         // panel that lost it — create it lazily; addSubagent is idempotent.
         let subId = os.getSubagentId(id, parentToolId);
         if (subId === null) {
-          subId = os.addSubagent(id, parentToolId);
+          subId = os.addSubagent(
+            id,
+            parentToolId,
+            paletteForNameNow(parentToolId, getLoadedCharacterCount()),
+          );
           const newSubId = subId;
           setSubagentCharacters((prev) => {
             if (prev.some((s) => s.id === newSubId)) return prev;
