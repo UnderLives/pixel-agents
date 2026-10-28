@@ -22,6 +22,8 @@ const lastHeard = new Map<number, number>();
 /** Bubbles left behind by characters that despawned, at the world position they stood. */
 const pinned = new Map<number, { text: string; until: number; x: number; y: number }>();
 let currentAudio: HTMLAudioElement | null = null;
+/** Longest text a bubble shows (a chat answer can be long; the panel has it whole). */
+const BUBBLE_TEXT_MAX = 160;
 
 /** Who speaks for a character (undefined = silent). */
 export function setSpeaker(charId: number, name: string | undefined): void {
@@ -53,6 +55,13 @@ export function speakerOf(charId: number): string | undefined {
 export function pinBubble(charId: number, x: number, y: number): void {
   const b = bubbles.get(charId);
   if (b) pinned.set(charId, { ...b, x, y });
+}
+
+/** Show `text` over a character now, whatever the director says (the boss's chat answers). */
+export function showBubble(charId: number, text: string, now = Date.now()): void {
+  const shown = text.length > BUBBLE_TEXT_MAX ? `${text.slice(0, BUBBLE_TEXT_MAX - 1)}…` : text;
+  bubbles.set(charId, { text: shown, until: now + Math.max(6_000, bubbleDurationMs(shown)) });
+  lastHeard.set(charId, now);
 }
 
 /** Bubbles of departed characters still on screen. */

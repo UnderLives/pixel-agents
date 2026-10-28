@@ -84,6 +84,8 @@ export class PixelAgentsServer {
     rotateToken?: boolean;
     /** Standalone: browsers need no token (the network is the gate). */
     noToken?: boolean;
+    /** Standalone boss chat folder. */
+    bossChatDir?: string;
   }): Promise<ServerConfig> {
     const embedded = options?.embedded ?? true;
     const wantsSpa = !embedded;
@@ -150,6 +152,7 @@ export class PixelAgentsServer {
       persona: options?.persona,
       speechAudioDir: options?.speechAudioDir,
       noToken: !embedded && (options?.noToken ?? false),
+      bossChatDir: embedded ? undefined : options?.bossChatDir,
       ptyManager: options?.ptyManager,
       allowedHosts: standalone?.allowedHosts,
     });

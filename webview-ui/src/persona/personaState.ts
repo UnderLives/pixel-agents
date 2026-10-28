@@ -22,6 +22,7 @@ interface PersonaState {
   bossCharacter: number;
   bossArea: string;
   bossVisitMinutes: number;
+  bossChat: boolean;
   /** False until the host sent personaSettingsLoaded: upstream behaviour until then. */
   received: boolean;
 }
@@ -39,6 +40,7 @@ let state: PersonaState = {
   bossCharacter: -1,
   bossArea: '',
   bossVisitMinutes: 0,
+  bossChat: false,
   received: false,
 };
 const listeners = new Set<() => void>();
@@ -57,6 +59,7 @@ export function setPersonaSettings(msg: PersonaSettingsLoaded): void {
     bossCharacter: msg.bossCharacter,
     bossArea: msg.bossArea,
     bossVisitMinutes: msg.bossVisitMinutes,
+    bossChat: msg.bossChat,
     received: true,
   };
   for (const l of listeners) l();

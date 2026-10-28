@@ -8,6 +8,7 @@
  * Each connecting WebSocket client receives the full state on webviewReady.
  */
 
+import * as os from 'os';
 import * as path from 'path';
 
 import { AgentRuntime } from './agentRuntime.js';
@@ -371,6 +372,8 @@ async function main(): Promise<void> {
       allowedHosts: args.allowedHosts,
       rotateToken: args.rotateToken,
       noToken: args.noToken,
+      // The owner's chat with the lead session: ~/.pixel-agents/boss/{inbox,outbox}.jsonl.
+      bossChatDir: path.join(os.homedir(), '.pixel-agents', 'boss'),
     });
     currentConfig = { port: config.port, token: config.token };
     if (args.rotateToken) {

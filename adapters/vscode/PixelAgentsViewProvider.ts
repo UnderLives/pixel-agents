@@ -1109,6 +1109,7 @@ export class PixelAgentsViewProvider implements vscode.WebviewViewProvider {
       'bossCharacter',
       'bossArea',
       'bossVisitMinutes',
+      'bossChat',
     ] as const;
     const persona = normalizePersonaConfig(Object.fromEntries(keys.map((k) => [k, cfg.get(k)])));
     setCharacterPolicy(persona);

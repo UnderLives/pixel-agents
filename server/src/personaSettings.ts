@@ -42,6 +42,8 @@ export interface PersonaConfig {
   bossArea: string;
   /** While active, the lead visits a named sub-agent at least this often (minutes); 0 = events only. */
   bossVisitMinutes: number;
+  /** Chat panel with the boss in the standalone office. */
+  bossChat: boolean;
 }
 
 /**
@@ -72,6 +74,7 @@ export const PERSONA_DEFAULTS: PersonaConfig = {
   bossCharacter: 0,
   bossArea: 'Direction',
   bossVisitMinutes: 3,
+  bossChat: true,
 };
 
 /** Coerce untrusted values (settings.json, config.json) onto PERSONA_DEFAULTS. */
@@ -110,6 +113,7 @@ export function normalizePersonaConfig(raw: unknown): PersonaConfig {
         : PERSONA_DEFAULTS.bossCharacter,
     bossArea: typeof r.bossArea === 'string' ? r.bossArea.trim() : PERSONA_DEFAULTS.bossArea,
     bossVisitMinutes: num(r.bossVisitMinutes, 0, 240, PERSONA_DEFAULTS.bossVisitMinutes),
+    bossChat: typeof r.bossChat === 'boolean' ? r.bossChat : PERSONA_DEFAULTS.bossChat,
   };
 }
 

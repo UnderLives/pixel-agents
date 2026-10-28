@@ -112,6 +112,13 @@ folder, with **`--no-token`**: access is protected by Tailscale alone. It writes
   (DNS rebinding). Traffic inside the tailnet is WireGuard-encrypted.
 - `--no-token` is a CLI flag of this fork (`node dist/cli.js --host <ip> --no-token`); without it
   the server keeps upstream's token (`?token=` URL, `--rotate-token` to revoke one).
+- **Chat with the boss** (`pixel-agents.bossChat`, default on; standalone `persona.bossChat`): a
+  collapsible "★ Aytaç" panel under the office. `POST /boss/say {text}` appends
+  `{ts, from: "owner", text}` to `~/.pixel-agents/boss/inbox.jsonl`; the lead session answers by
+  appending `{ts, from: "aytac", text}` to `~/.pixel-agents/boss/outbox.jsonl`; both sides stream on
+  the `/boss/feed` WebSocket (`owner: …` / `aytac: …`), `GET /boss/history?n=50` merges the two
+  files. His answer also shows as his bubble; a message sends him to his desk to read it. Same Host
+  allowlist as the rest, no token.
 - **Talking to the boss from the phone**: `+ Agent` in the browser starts a new `claude` session in
   the game folder, in a terminal the phone sees and types into. A session already open in VS Code
   **cannot** be attached: the office shows it (and its sub-agents), but only sessions the server

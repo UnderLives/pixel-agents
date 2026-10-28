@@ -9,7 +9,7 @@
 
 import type { OfficeState } from '../office/engine/officeState.js';
 import { foldName, getPersona } from './personaState.js';
-import { speak, speakerOf } from './speechRuntime.js';
+import { showBubble, speak, speakerOf } from './speechRuntime.js';
 
 /** Seconds the boss stands at a desk. */
 const VISIT_STAY_MIN_SEC = 4;
@@ -90,6 +90,30 @@ export function onBossMessage(os: OfficeState, bossId: number, recipient: string
 export function onEmployeeDone(os: OfficeState, bossId: number, employeeName: string): void {
   if (!isBoss(os, bossId)) return;
   speak(bossId, 'praise', { vars: { name: employeeName }, force: true });
+}
+
+/** How long the boss "reads" a message from the owner at his desk. */
+const READ_MESSAGE_MS = 6_000;
+
+/** The owner wrote to the boss: he drops what he is doing and reads it at his desk. */
+export function onOwnerMessage(os: OfficeState): void {
+  for (const ch of os.characters.values()) {
+    if (!isBoss(os, ch.id)) continue;
+    ch.visit = undefined;
+    const previous = ch.currentTool;
+    os.sendToSeat(ch.id);
+    os.setAgentTool(ch.id, 'Read');
+    setTimeout(() => {
+      if (os.characters.get(ch.id)?.currentTool === 'Read') os.setAgentTool(ch.id, previous);
+    }, READ_MESSAGE_MS);
+  }
+}
+
+/** The boss answered in the chat: his bubble says it. */
+export function onBossReply(os: OfficeState, text: string): void {
+  for (const ch of os.characters.values()) {
+    if (isBoss(os, ch.id)) showBubble(ch.id, text);
+  }
 }
 
 /** Periodic: an active boss who has not been round for a while visits someone. */

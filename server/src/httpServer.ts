@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import type { PersonaSettingsLoaded } from '../../core/src/messages.js';
 import type { AgentRuntime } from './agentRuntime.js';
 import type { AgentStateStore } from './agentStateStore.js';
+import { registerBossChatRoutes } from './bossChat.js';
 import type {
   AssetCache,
   ReloadAssetsSideEffect,
@@ -43,6 +44,8 @@ export interface HttpServerOptions {
   token: string;
   /** Standalone `--no-token`: browser sockets need no `?token=` (hooks still use the Bearer token). */
   noToken?: boolean;
+  /** Standalone boss chat folder (inbox/outbox JSONL, see bossChat.ts); absent = no chat routes. */
+  bossChatDir?: string;
   /** AgentStateStore for WebSocket broadcast piping */
   store: AgentStateStore;
   /** Shared agent lifecycle core (for toggle side effects + standalone restore). Optional in embedded mode. */
@@ -126,6 +129,13 @@ export async function createHttpServer(options: HttpServerOptions): Promise<Http
   registerHealthRoute(app);
   registerHookRoute(app, options);
   registerWebSocketRoute(app, options, allowedHostnames);
+  if (!options.embedded && options.bossChatDir) {
+    const stopBossChat = registerBossChatRoutes(app, {
+      dir: options.bossChatDir,
+      allowedHostnames,
+    });
+    app.addHook('onClose', async () => stopBossChat());
+  }
   registerTerminalRoutes(app, {
     token: options.token,
     tokenRequired: !options.noToken,

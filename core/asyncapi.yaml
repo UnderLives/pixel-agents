@@ -725,6 +725,7 @@ components:
           bossCharacter,
           bossArea,
           bossVisitMinutes,
+          bossChat,
         ]
       properties:
         type:
@@ -752,6 +753,9 @@ components:
         bossArea:
           type: string
           description: Area label whose seats the lead prefers (its own office); empty = none.
+        bossChat:
+          type: boolean
+          description: Show the chat panel with the boss (standalone office; /boss/* routes).
         bossVisitMinutes:
           type: number
           description: While active, the lead walks over to a named sub-agent at least this often; 0 = only on events.

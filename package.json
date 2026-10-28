@@ -171,6 +171,11 @@
           "maximum": 240,
           "default": 3,
           "description": "While active, the lead walks over to one of its named sub-agents at least this often (it also visits when it hands one a task or messages her). 0 = only on those events."
+        },
+        "pixel-agents.bossChat": {
+          "type": "boolean",
+          "default": true,
+          "description": "Standalone office: show the chat panel with the boss (messages go to ~/.pixel-agents/boss/inbox.jsonl, answers come from outbox.jsonl)."
         }
       }
     }

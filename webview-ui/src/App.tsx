@@ -40,6 +40,7 @@ import { migrateLayoutColors } from './office/layout/layoutSerializer.js';
 import { overlayProjection } from './office/projection.js';
 import { getPetCount } from './office/sprites/petSpriteData.js';
 import { EditTool, type OfficeLayout, TILE_SIZE } from './office/types.js';
+import { BossChatPanel } from './persona/BossChatPanel.js';
 import { isBrowserRuntime, isE2E } from './runtime.js';
 import { installTestHooks } from './testHooks.js';
 import { transport } from './transport/index.js';
@@ -689,6 +690,7 @@ function App() {
         />
       )}
 
+      <BossChatPanel getOfficeState={getOfficeState} isMobile={isMobile} />
       <ConnectionIndicator />
     </div>
   );
