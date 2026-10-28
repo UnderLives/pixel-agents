@@ -1,0 +1,136 @@
+{
+  "Linda": {
+    "speaker": "Linda",
+    "sex": "f",
+    "ageDecades": [
+      25,
+      35
+    ],
+    "pool": "Common Voice en dev+test (CC0), Qwen3-TTS 0.6B Base speaker encoder",
+    "sources": [
+      "cv:2f9f5683ae8e",
+      "cv:293991b0537b",
+      "cv:5c3a1f104abc"
+    ],
+    "blend": "mean of 3, pushed x1.3 from the bracket average, renormalised",
+    "seed": 1268194360,
+    "nudge": 0
+  },
+  "Maya": {
+    "speaker": "Maya",
+    "sex": "f",
+    "ageDecades": [
+      35,
+      45
+    ],
+    "pool": "Common Voice en dev+test (CC0), Qwen3-TTS 0.6B Base speaker encoder",
+    "sources": [
+      "cv:08d924739585",
+      "cv:49a397db7889",
+      "cv:0c6bf6782176"
+    ],
+    "blend": "mean of 3, pushed x1.3 from the bracket average, renormalised",
+    "seed": 641814135,
+    "nudge": 0
+  },
+  "Nora": {
+    "speaker": "Nora",
+    "sex": "f",
+    "ageDecades": [
+      25
+    ],
+    "pool": "Common Voice en dev+test (CC0), Qwen3-TTS 0.6B Base speaker encoder",
+    "sources": [
+      "cv:d19965f3d4ae",
+      "cv:ed63f29ca1ff",
+      "cv:36062260d676"
+    ],
+    "blend": "mean of 3, pushed x1.3 from the bracket average, renormalised",
+    "seed": 4281623879,
+    "nudge": 1
+  },
+  "Sacha": {
+    "speaker": "Sacha",
+    "sex": "f",
+    "ageDecades": [
+      25,
+      35
+    ],
+    "pool": "Common Voice en dev+test (CC0), Qwen3-TTS 0.6B Base speaker encoder",
+    "sources": [
+      "cv:dcbc2e4c8616",
+      "cv:bb27a7cb9133",
+      "cv:4946e08edb1d"
+    ],
+    "blend": "mean of 3, pushed x1.3 from the bracket average, renormalised",
+    "seed": 2248679541,
+    "nudge": 2
+  },
+  "Iris": {
+    "speaker": "Iris",
+    "sex": "f",
+    "ageDecades": [
+      25
+    ],
+    "pool": "Common Voice en dev+test (CC0), Qwen3-TTS 0.6B Base speaker encoder",
+    "sources": [
+      "cv:fcf0cf49d7ad",
+      "cv:fc8a62e37d67",
+      "cv:d21cf645e7b2"
+    ],
+    "blend": "mean of 3, pushed x1.3 from the bracket average, renormalised",
+    "seed": 1109722532,
+    "nudge": 3
+  },
+  "Léa": {
+    "speaker": "Léa",
+    "sex": "f",
+    "ageDecades": [
+      25,
+      35
+    ],
+    "pool": "Common Voice en dev+test (CC0), Qwen3-TTS 0.6B Base speaker encoder",
+    "sources": [
+      "cv:ad0baf1a0168",
+      "cv:77f1089e9709",
+      "cv:835751540677"
+    ],
+    "blend": "mean of 3, pushed x1.3 from the bracket average, renormalised",
+    "seed": 1772507005,
+    "nudge": 4
+  },
+  "Zoé": {
+    "speaker": "Zoé",
+    "sex": "f",
+    "ageDecades": [
+      16,
+      25
+    ],
+    "pool": "Common Voice en dev+test (CC0), Qwen3-TTS 0.6B Base speaker encoder",
+    "sources": [
+      "cv:84a278ccb9f1",
+      "cv:4d8bcae339c3",
+      "cv:0eda4a73c667"
+    ],
+    "blend": "mean of 3, pushed x1.3 from the bracket average, renormalised",
+    "seed": 3451698721,
+    "nudge": 0
+  },
+  "Aytaç": {
+    "speaker": "Aytaç",
+    "sex": "m",
+    "ageDecades": [
+      35,
+      45
+    ],
+    "pool": "Common Voice en dev+test (CC0), Qwen3-TTS 0.6B Base speaker encoder",
+    "sources": [
+      "cv:b874030927c4",
+      "cv:1768260de232",
+      "cv:935e99f0f10f"
+    ],
+    "blend": "mean of 3, pushed x1.3 from the bracket average, renormalised",
+    "seed": 2871123768,
+    "nudge": 0
+  }
+}
