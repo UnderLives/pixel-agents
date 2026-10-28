@@ -39,8 +39,14 @@ export function forgetCharacter(charId: number): void {
   lastHeard.delete(charId);
 }
 
+/** Who speaks for characters with no explicit speaker (the boss). */
+let speakerResolver: ((charId: number) => string | undefined) | null = null;
+export function setSpeakerResolver(resolve: (charId: number) => string | undefined): void {
+  speakerResolver = resolve;
+}
+
 export function speakerOf(charId: number): string | undefined {
-  return speakers.get(charId);
+  return speakers.get(charId) ?? speakerResolver?.(charId);
 }
 
 /** Leave a character's current bubble at (x, y) after the character is gone. */
@@ -72,15 +78,25 @@ export function bubbleFor(charId: number, now = Date.now()): string | null {
   return b.text;
 }
 
+export interface SpeakOptions {
+  /** Placeholders filled in the line: "{name}" -> vars.name. */
+  vars?: Record<string, string>;
+  /** Skip the gaps and odds (a scripted moment, e.g. the boss at a desk). */
+  force?: boolean;
+  now?: number;
+}
+
 /** Make a character speak in a situation (if it has a speaker, a bank, and the director agrees). */
-export function speak(charId: number, situation: Situation, now = Date.now()): boolean {
+export function speak(charId: number, situation: Situation, opts: SpeakOptions = {}): boolean {
+  const now = opts.now ?? Date.now();
   const persona = getPersona();
   if (persona.speech === 'off') return false;
-  const name = speakers.get(charId);
+  const name = speakerOf(charId);
   if (!name) return false;
-  const line = director.say(name, situation, bankFor(name), now);
+  const line = director.say(name, situation, bankFor(name), now, opts.force);
   if (!line) return false;
-  bubbles.set(charId, { text: line.text, until: now + bubbleDurationMs(line.text) });
+  const text = line.text.replace(/\{(\w+)\}/g, (m, key: string) => opts.vars?.[key] ?? m);
+  bubbles.set(charId, { text, until: now + bubbleDurationMs(text) });
   lastHeard.set(charId, now);
   if (persona.speech === 'voice' && persona.audioBase && line.audio) {
     playVoice(
@@ -116,7 +132,7 @@ export function tickFillers(present: ReadonlySet<number>, now = Date.now()): voi
   if (quietest === null || now - quietSince < minutes * 60_000) return;
   // Count it as heard either way, so a speaker with no filler lines doesn't block the others.
   lastHeard.set(quietest, now);
-  speak(quietest, Math.random() < 1 / 3 ? 'motivation' : 'filler', now);
+  speak(quietest, Math.random() < 1 / 3 ? 'motivation' : 'filler', { now });
 }
 
 function playVoice(url: string, volume: number): void {

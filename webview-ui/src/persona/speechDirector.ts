@@ -18,6 +18,9 @@ export const SITUATIONS = [
   'error',
   'filler',
   'motivation',
+  // The boss's own: walking over to an employee, and congratulating one who finished.
+  'visit',
+  'praise',
 ] as const;
 export type Situation = (typeof SITUATIONS)[number];
 
@@ -34,9 +37,18 @@ const CHANCE: Record<Situation, number> = {
   error: 1,
   filler: 1,
   motivation: 1,
+  visit: 1,
+  praise: 1,
 };
 /** Milestones may interrupt the per-speaker gap; chatter may not. */
-const MILESTONE: ReadonlySet<Situation> = new Set(['start_item', 'done', 'permission', 'error']);
+const MILESTONE: ReadonlySet<Situation> = new Set([
+  'start_item',
+  'done',
+  'permission',
+  'error',
+  'visit',
+  'praise',
+]);
 
 const BUILD_RE =
   /editor_lock\.sh\s+build|Build\.bat|\bnpm run (build|package|compile)\b|vsce package|package\.sh|\bmsbuild\b|\bcmake --build\b/i;
@@ -103,14 +115,15 @@ export class SpeechDirector {
     situation: Situation,
     bank: Readonly<Record<string, readonly SpeechLine[]>> | undefined,
     now: number,
+    force = false,
   ): SpeechLine | null {
     const lines = bank?.[situation];
     if (!lines?.length) return null;
     const mem = this.memory.get(speaker) ?? { recent: [], lastAt: -Infinity };
-    const milestone = MILESTONE.has(situation);
+    const milestone = force || MILESTONE.has(situation);
     if (!milestone && now - mem.lastAt < this.speakerGapMs) return null;
     if (now - this.lastOfficeAt < (milestone ? 0 : this.officeGapMs)) return null;
-    if (this.random() >= CHANCE[situation]) return null;
+    if (!force && this.random() >= CHANCE[situation]) return null;
 
     const line = pickLine(lines, mem.recent, this.random);
     mem.recent = [...mem.recent.filter((id) => id !== line.id), line.id].slice(-this.recentWindow);

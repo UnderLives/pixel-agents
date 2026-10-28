@@ -109,7 +109,19 @@ describe('palette assignment under a character policy', () => {
     setPaletteCount(6);
   });
 
-  it('only hands out women, and the lead gets the face no name reserved', () => {
+  it('the lead wears the boss sprite, outside the women set, even over a saved palette', () => {
+    setPaletteCount(11);
+    setCharacterPolicy(PERSONA_DEFAULTS);
+    const lead = agent({ id: 1, palette: 2, hueShift: 40 });
+    assignPaletteIfNeeded(lead, new AgentStateStore());
+    expect(lead.palette).toBe(0);
+    expect(lead.hueShift).toBe(0);
+    const teammate = agent({ id: 3, leadAgentId: 1 });
+    assignPaletteIfNeeded(teammate, new AgentStateStore());
+    expect(BUNDLED_WOMEN).toContain(teammate.palette);
+  });
+
+  it('without a boss sprite, only women, and the lead gets the face no name reserved', () => {
     setPaletteCount(11);
     setCharacterPolicy({
       characterSet: 'women',

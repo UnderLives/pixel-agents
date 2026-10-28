@@ -721,6 +721,10 @@ components:
           speechVolume,
           speechFillerMinutes,
           speechBanks,
+          bossName,
+          bossCharacter,
+          bossArea,
+          bossVisitMinutes,
         ]
       properties:
         type:
@@ -739,6 +743,18 @@ components:
           type: number
         speechFillerMinutes:
           type: number
+        bossName:
+          type: string
+          description: Name on the lead session's tag (its role line reads "boss").
+        bossCharacter:
+          type: integer
+          description: char_N the lead sessions wear, outside the character set; -1 = drawn like any agent.
+        bossArea:
+          type: string
+          description: Area label whose seats the lead prefers (its own office); empty = none.
+        bossVisitMinutes:
+          type: number
+          description: While active, the lead walks over to a named sub-agent at least this often; 0 = only on events.
         speechBanks:
           type: object
           additionalProperties:

@@ -33,6 +33,8 @@ export function setPaletteCount(count: number): void {
 export interface CharacterPolicy {
   characterSet: CharacterSet;
   characterByName: Record<string, number>;
+  /** char_N every lead session wears, outside the set (-1 / absent = none). */
+  bossCharacter?: number;
 }
 let currentPolicy: CharacterPolicy = { characterSet: 'all', characterByName: {} };
 
@@ -53,9 +55,23 @@ export function getCharacterPolicy(): CharacterPolicy {
  * @param store - The agent state store (used to count existing palettes)
  */
 export function assignPaletteIfNeeded(agent: AgentState, store: AgentStateStore): void {
+  const count = currentPaletteCount;
+  // A lead session (no name, no lead of its own) is the boss: one fixed sprite,
+  // even over a palette persisted before the policy existed.
+  const boss = currentPolicy.bossCharacter;
+  if (
+    boss !== undefined &&
+    boss >= 0 &&
+    boss < count &&
+    !agent.agentName &&
+    agent.leadAgentId === undefined
+  ) {
+    agent.palette = boss;
+    agent.hueShift = 0;
+    return;
+  }
   if (agent.palette !== undefined) return;
 
-  const count = currentPaletteCount;
   const allowed = allowedPalettes(count, currentPolicy.characterSet);
   // A named agent (teammate) always wears the same sprite, session after session.
   if (agent.agentName) {

@@ -125,6 +125,36 @@ export function updateCharacter(
     case CharacterState.IDLE: {
       // No idle animation — static pose
       ch.frame = 0;
+      // On a visit: stand by the visited character, then head back to the seat.
+      if (ch.visit) {
+        if (!ch.visit.arrived) {
+          ch.visit.arrived = true;
+          ch.dir = directionBetween(ch.tileCol, ch.tileRow, ch.visit.faceCol, ch.visit.faceRow);
+        }
+        ch.visit.stay -= dt;
+        if (ch.visit.stay > 0) break;
+        ch.visit = undefined;
+        const home = ch.seatId ? seats.get(ch.seatId) : undefined;
+        if (home) {
+          const path = findPath(
+            ch.tileCol,
+            ch.tileRow,
+            home.seatCol,
+            home.seatRow,
+            tileMap,
+            blockedTiles,
+          );
+          if (path.length > 0) {
+            ch.path = path;
+            ch.moveProgress = 0;
+            ch.state = CharacterState.WALK;
+            ch.frame = 0;
+            ch.frameTimer = 0;
+            ch.wanderCount = ch.wanderLimit;
+            break;
+          }
+        }
+      }
       if (ch.seatTimer < 0) ch.seatTimer = 0; // clear turn-end sentinel
       // If became active, pathfind to seat
       if (ch.isActive) {
@@ -223,7 +253,10 @@ export function updateCharacter(
         ch.x = center.x;
         ch.y = center.y;
 
-        if (ch.isActive) {
+        if (ch.visit) {
+          // Arrived at the visited character: the IDLE branch runs the stay.
+          ch.state = CharacterState.IDLE;
+        } else if (ch.isActive) {
           if (!ch.seatId) {
             // No seat — type in place
             ch.state = CharacterState.TYPE;
@@ -290,8 +323,8 @@ export function updateCharacter(
         ch.moveProgress = 0;
       }
 
-      // If became active while wandering, repath to seat
-      if (ch.isActive && ch.seatId) {
+      // If became active while wandering, repath to seat (not while on a visit)
+      if (ch.isActive && ch.seatId && !ch.visit) {
         const seat = seats.get(ch.seatId);
         if (seat) {
           const lastStep = ch.path[ch.path.length - 1];

@@ -16,7 +16,7 @@ import {
   PET_HIT_HEIGHT,
   WAITING_BUBBLE_DURATION_SEC,
 } from '../../constants.js';
-import { allowedPalettesNow } from '../../persona/personaState.js';
+import { allowedPalettesNow, bossArea, bossCharacterNow } from '../../persona/personaState.js';
 import { getAnimationFrames, getCatalogEntry, getOnStateType } from '../layout/furnitureCatalog.js';
 import {
   createDefaultLayout,
@@ -404,6 +404,65 @@ export class OfficeState {
     return this.pickFromSeats(freeSeats, electronicsTiles);
   }
 
+  /** A free seat inside Area `label` (the boss's office), or null. */
+  private findFreeSeatInArea(label: string): string | null {
+    const inArea = [...this.seats.entries()]
+      .filter(([uid, seat]) => !seat.assigned && this.seatZone(uid) === label)
+      .map(([uid]) => uid);
+    return this.pickFromSeats(inArea, this.buildElectronicsTileSet());
+  }
+
+  /** A free seat outside Area `label` (an employee's desk in the open space), or null. */
+  private findFreeSeatOutside(label: string): string | null {
+    const outside = [...this.seats.entries()]
+      .filter(([uid, seat]) => !seat.assigned && this.seatZone(uid) !== label)
+      .map(([uid]) => uid);
+    return this.pickFromSeats(outside, this.buildElectronicsTileSet());
+  }
+
+  /** Called when a visitor reaches the character it walked over to. */
+  onVisitArrive: ((visitorId: number, targetId: number) => void) | null = null;
+
+  /**
+   * Walk `visitorId` over to `targetId`, stand there `staySec`, then back to its
+   * seat. False when either is missing or there is no free tile next to the
+   * target to stand on.
+   */
+  startVisit(visitorId: number, targetId: number, staySec: number): boolean {
+    const visitor = this.characters.get(visitorId);
+    const target = this.characters.get(targetId);
+    if (!visitor || !target || visitor.visit || visitorId === targetId) return false;
+    const spot = this.closestFreeWalkableTile(target.tileCol, target.tileRow);
+    if (!spot) return false;
+    const path = this.withOwnSeatUnblocked(visitor, () =>
+      findPath(
+        visitor.tileCol,
+        visitor.tileRow,
+        spot.col,
+        spot.row,
+        this.tileMap,
+        this.blockedTiles,
+      ),
+    );
+    visitor.visit = {
+      targetId,
+      faceCol: target.tileCol,
+      faceRow: target.tileRow,
+      stay: staySec,
+      arrived: false,
+    };
+    if (path.length === 0) {
+      visitor.state = CharacterState.IDLE;
+      return true;
+    }
+    visitor.path = path;
+    visitor.moveProgress = 0;
+    visitor.state = CharacterState.WALK;
+    visitor.frame = 0;
+    visitor.frameTimer = 0;
+    return true;
+  }
+
   /** Closest walkable tile to (col,row) not occupied by another character, or null. */
   private closestFreeWalkableTile(col: number, row: number): { col: number; row: number } | null {
     const occupied = new Set<string>();
@@ -455,7 +514,13 @@ export class OfficeState {
 
     let palette: number;
     let hueShift: number;
-    if (preferredPalette !== undefined) {
+    // A lead (not placed next to an anchor) is the boss: one sprite, one office.
+    const isLead = nearAgentId === undefined;
+    const bossSprite = isLead ? bossCharacterNow(getLoadedCharacterCount()) : undefined;
+    if (bossSprite !== undefined) {
+      palette = bossSprite;
+      hueShift = 0;
+    } else if (preferredPalette !== undefined) {
       palette = preferredPalette;
       hueShift = preferredHueShift ?? 0;
     } else {
@@ -471,7 +536,9 @@ export class OfficeState {
     const anchor = nearAgentId !== undefined ? this.characters.get(nearAgentId) : undefined;
     const anchorAt = anchorTile(anchor, this.seats);
     let seatId: string | null = null;
-    if (preferredSeatId && this.seats.has(preferredSeatId)) {
+    const office = isLead ? bossArea() : '';
+    if (office) seatId = this.findFreeSeatInArea(office);
+    if (!seatId && preferredSeatId && this.seats.has(preferredSeatId)) {
       const seat = this.seats.get(preferredSeatId)!;
       if (!seat.assigned) {
         seatId = preferredSeatId;
@@ -727,7 +794,11 @@ export class OfficeState {
   }
 
   /** Create a sub-agent character with the parent's palette. Returns the sub-agent ID. */
-  /** `ownPalette`: a named sub-agent's own face (persona); otherwise the parent's. */
+  /**
+   * `ownPalette`: a named sub-agent's own face (persona); otherwise the parent's.
+   * With a boss office configured, the sub-agent works at a free desk outside it
+   * (an employee in the open space) instead of standing next to the boss.
+   */
   addSubagent(parentAgentId: number, parentToolId: string, ownPalette?: number): number {
     const key = `${parentAgentId}:${parentToolId}`;
     if (this.subagentIdMap.has(key)) return this.subagentIdMap.get(key)!;
@@ -737,21 +808,28 @@ export class OfficeState {
     const palette = ownPalette ?? (parentCh ? parentCh.palette : 0);
     const hueShift = ownPalette !== undefined ? 0 : parentCh ? parentCh.hueShift : 0;
 
-    // Find the closest walkable tile to the parent, avoiding tiles occupied by other characters
-    const parentCol = parentCh ? parentCh.tileCol : 0;
-    const parentRow = parentCh ? parentCh.tileRow : 0;
+    // An employee's desk (boss office configured), else stand by the parent.
+    const office = bossArea();
+    const deskId = office ? this.findFreeSeatOutside(office) : null;
+    const desk = deskId ? this.seats.get(deskId) : undefined;
+    // Find the closest walkable tile to the anchor, avoiding tiles occupied by other characters
+    const parentCol = desk ? desk.seatCol : parentCh ? parentCh.tileCol : 0;
+    const parentRow = desk ? desk.seatRow : parentCh ? parentCh.tileRow : 0;
     let spawn = { col: parentCol, row: parentRow };
     if (this.walkableTiles.length > 0) {
       spawn = this.closestFreeWalkableTile(parentCol, parentRow) ?? this.walkableTiles[0];
     }
 
-    const ch = createCharacter(id, palette, null, null, hueShift);
+    const ch = createCharacter(id, palette, deskId, null, hueShift);
+    if (desk) desk.assigned = true;
     ch.x = spawn.col * TILE_SIZE + TILE_SIZE / 2;
     ch.y = spawn.row * TILE_SIZE + TILE_SIZE / 2;
     ch.tileCol = spawn.col;
     ch.tileRow = spawn.row;
     // Face the same direction as the parent agent
-    if (parentCh) ch.dir = parentCh.dir;
+    if (parentCh && !desk) ch.dir = parentCh.dir;
+    // At a desk: start idle so the FSM walks her to it (TYPE would type in place).
+    if (desk) ch.state = CharacterState.IDLE;
     ch.isSubagent = true;
     ch.parentAgentId = parentAgentId;
     startMatrixEffect(ch, 'spawn');
@@ -1154,6 +1232,10 @@ export class OfficeState {
       this.withOwnSeatUnblocked(ch, () =>
         updateCharacter(ch, dt, this.walkableTiles, this.seats, this.tileMap, this.blockedTiles),
       );
+      if (ch.visit?.arrived && !ch.visit.announced) {
+        ch.visit.announced = true;
+        this.onVisitArrive?.(ch.id, ch.visit.targetId);
+      }
 
       // Tick bubble timer for waiting bubbles
       if (ch.bubbleType === 'waiting') {

@@ -68,3 +68,15 @@ test('bubbles stay long enough to read, within bounds', () => {
   assert.equal(bubbleDurationMs('ok'), 3_000);
   assert.equal(bubbleDurationMs('x'.repeat(500)), 9_000);
 });
+
+test('a forced line skips the gaps and the odds', () => {
+  const director = new SpeechDirector({
+    speakerGapMs: 60_000,
+    officeGapMs: 60_000,
+    random: () => 0.99,
+  });
+  const bank = { reading: lines(3) };
+  assert.equal(director.say('Aytaç', 'reading', bank, 0), null);
+  assert.ok(director.say('Aytaç', 'reading', bank, 1, true));
+  assert.ok(director.say('Aytaç', 'reading', bank, 2, true));
+});

@@ -34,6 +34,14 @@ export interface PersonaConfig {
   speechVolume: number;
   /** Minutes of silence before an idle named character says a filler line; 0 = never. */
   speechFillerMinutes: number;
+  /** Name on the lead session's tag. */
+  bossName: string;
+  /** char_N the lead wears whatever the character set; -1 = drawn like any agent. */
+  bossCharacter: number;
+  /** Area label of the lead's own office (its preferred seats); '' = none. */
+  bossArea: string;
+  /** While active, the lead visits a named sub-agent at least this often (minutes); 0 = events only. */
+  bossVisitMinutes: number;
 }
 
 /**
@@ -59,6 +67,11 @@ export const PERSONA_DEFAULTS: PersonaConfig = {
   speech: 'text',
   speechVolume: 0.8,
   speechFillerMinutes: 4,
+  // The lead: Aytaç, in the Metro City suit (char_0), in his own "Direction" office.
+  bossName: 'Aytaç',
+  bossCharacter: 0,
+  bossArea: 'Direction',
+  bossVisitMinutes: 3,
 };
 
 /** Coerce untrusted values (settings.json, config.json) onto PERSONA_DEFAULTS. */
@@ -85,6 +98,18 @@ export function normalizePersonaConfig(raw: unknown): PersonaConfig {
       : PERSONA_DEFAULTS.speech,
     speechVolume: num(r.speechVolume, 0, 1, PERSONA_DEFAULTS.speechVolume),
     speechFillerMinutes: num(r.speechFillerMinutes, 0, 240, PERSONA_DEFAULTS.speechFillerMinutes),
+    bossName:
+      typeof r.bossName === 'string' && r.bossName.trim()
+        ? r.bossName.trim().slice(0, 40)
+        : PERSONA_DEFAULTS.bossName,
+    bossCharacter:
+      typeof r.bossCharacter === 'number' &&
+      Number.isInteger(r.bossCharacter) &&
+      r.bossCharacter >= -1
+        ? r.bossCharacter
+        : PERSONA_DEFAULTS.bossCharacter,
+    bossArea: typeof r.bossArea === 'string' ? r.bossArea.trim() : PERSONA_DEFAULTS.bossArea,
+    bossVisitMinutes: num(r.bossVisitMinutes, 0, 240, PERSONA_DEFAULTS.bossVisitMinutes),
   };
 }
 

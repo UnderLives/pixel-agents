@@ -21,12 +21,22 @@ import {
 } from '../office/toolUtils.js';
 import type { OfficeLayout, ToolActivity } from '../office/types.js';
 import { setWallSprites } from '../office/wallTiles.js';
-import { paletteForNameNow, setPersonaSettings } from '../persona/personaState.js';
+import {
+  attachBossRounds,
+  isBoss,
+  onBossMessage,
+  onEmployeeDone,
+  onEmployeeHired,
+  tickBossRounds,
+} from '../persona/bossRuntime.js';
+import { getPersona, paletteForNameNow, setPersonaSettings } from '../persona/personaState.js';
 import {
   forgetCharacter,
   pinBubble,
   setSpeaker,
+  setSpeakerResolver,
   speak,
+  speakerOf,
   speakForTool,
   tickFillers,
 } from '../persona/speechRuntime.js';
@@ -483,6 +493,10 @@ export function useExtensionMessages(
         });
         const toolName = (msg.toolName as string | undefined) ?? extractToolName(status);
         if (toolName) speakForTool(id, toolName, status);
+        // The boss messaging an employee ("-> Linda") walks over to her.
+        if (toolName === 'SendMessage' && status.startsWith('-> ')) {
+          onBossMessage(os, id, status.slice(3));
+        }
         os.setAgentTool(id, toolName);
         os.setAgentActive(id, true);
         // Don't clear the permission bubble if the hook already confirmed permission is needed
@@ -526,7 +540,10 @@ export function useExtensionMessages(
             parsed.named ? paletteForNameNow(parsed.name, getLoadedCharacterCount()) : undefined,
           );
           if (parsed.named) setSpeaker(subId, parsed.name);
-          if (isNew) speak(subId, 'start_item');
+          if (isNew) {
+            speak(subId, 'start_item');
+            if (parsed.named) onEmployeeHired(os, id, subId);
+          }
           setSubagentCharacters((prev) => {
             if (prev.some((s) => s.id === subId)) return prev;
             return [...prev, { id: subId, parentAgentId: id, parentToolId: toolId, label }];
@@ -724,7 +741,9 @@ export function useExtensionMessages(
         const clearedSubId = os.getSubagentId(id, parentToolId);
         if (clearedSubId !== null) {
           const subCh = os.characters.get(clearedSubId);
+          const doneName = speakerOf(clearedSubId);
           if (speak(clearedSubId, 'done') && subCh) pinBubble(clearedSubId, subCh.x, subCh.y);
+          if (doneName) onEmployeeDone(os, id, doneName);
           forgetCharacter(clearedSubId);
         }
         // Remove sub-agent character
@@ -897,10 +916,17 @@ export function useExtensionMessages(
       }
     };
     const unsubscribe = transport.onMessage(handler);
+    // The boss speaks under the configured boss name; rounds start from his desk.
+    const officeForBoss = getOfficeState();
+    setSpeakerResolver((charId) =>
+      getPersona().received && isBoss(officeForBoss, charId) ? getPersona().bossName : undefined,
+    );
+    attachBossRounds(officeForBoss);
     transport.send({ type: 'webviewReady' });
     // Idle fillers: every few seconds the named character silent the longest may talk.
     const fillerTimer = setInterval(() => {
       tickFillers(new Set(getOfficeState().characters.keys()));
+      tickBossRounds(getOfficeState());
     }, SPEECH_FILLER_TICK_MS);
     return () => {
       clearInterval(fillerTimer);

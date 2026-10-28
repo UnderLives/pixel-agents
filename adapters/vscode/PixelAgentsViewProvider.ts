@@ -1105,6 +1105,10 @@ export class PixelAgentsViewProvider implements vscode.WebviewViewProvider {
       'speech',
       'speechVolume',
       'speechFillerMinutes',
+      'bossName',
+      'bossCharacter',
+      'bossArea',
+      'bossVisitMinutes',
     ] as const;
     const persona = normalizePersonaConfig(Object.fromEntries(keys.map((k) => [k, cfg.get(k)])));
     setCharacterPolicy(persona);

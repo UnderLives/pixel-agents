@@ -64,7 +64,13 @@ export function formatToolStatus(toolName: string, input?: unknown): string {
       return teamName ? `Creating team: ${teamName}` : 'Creating team';
     }
     case 'SendMessage': {
-      const recipient = typeof inp.recipient === 'string' ? inp.recipient : '';
+      // `to` in current Claude Code, `recipient` in earlier versions.
+      const recipient =
+        typeof inp.recipient === 'string'
+          ? inp.recipient
+          : typeof inp.to === 'string'
+            ? inp.to
+            : '';
       return recipient ? `-> ${recipient}` : 'Sending message';
     }
     default:

@@ -307,6 +307,10 @@ export interface PersonaSettingsLoaded {
   speech: SpeechMode;
   speechVolume: number;
   speechFillerMinutes: number;
+  bossName: string;
+  bossCharacter: number;
+  bossArea: string;
+  bossVisitMinutes: number;
   speechBanks: Record<string, Record<string, SpeechLine[]>>;
   audioBase?: string;
 }

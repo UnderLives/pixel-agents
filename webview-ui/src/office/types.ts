@@ -167,6 +167,19 @@ export interface OfficeLayout {
   areaTiles?: Array<string | null>;
 }
 
+export interface CharacterVisit {
+  /** The character being visited. */
+  targetId: number;
+  /** Tile to face on arrival (the visited character's). */
+  faceCol: number;
+  faceRow: number;
+  /** Seconds to stay once arrived. */
+  stay: number;
+  arrived: boolean;
+  /** Set by OfficeState once the arrival was reported (one callback per visit). */
+  announced?: boolean;
+}
+
 export interface Character {
   id: number;
   state: CharacterState;
@@ -235,6 +248,10 @@ export interface Character {
    *  per-consumer guard reads this flag. It exists for the render/e2e snapshot
    *  (testHooks.getCharacters) to tell the greeter from agents. */
   isGreeter?: boolean;
+
+  /** A scripted walk-over (the boss visiting an employee): while set, the FSM
+   *  neither repaths to the seat nor wanders. `stay` counts down once arrived. */
+  visit?: CharacterVisit;
 
   // -- Agent Teams --
   /** Team name this agent belongs to */

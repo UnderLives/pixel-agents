@@ -69,6 +69,8 @@ interface ToolOverlayProps {
 
 /** Name shown for a lead session with no name of its own. */
 const BOSS_NAME = 'Boss';
+/** Role line of the lead's tag ("Aytaç · boss"). */
+const BOSS_ROLE = 'boss';
 /** Marker in front of a lead's name, so the boss reads at a glance. */
 const BOSS_MARKER = '\u2605';
 
@@ -95,7 +97,10 @@ function nameTagFor(
     const parsed = parseAgentLabel(ch.agentName);
     return { name: parsed.name, role: parsed.role, boss: false };
   }
-  return { name: ch.agentName || BOSS_NAME, role: ch.directoryName ?? null, boss: true };
+  const persona = getPersona();
+  return persona.received
+    ? { name: persona.bossName, role: BOSS_ROLE, boss: true }
+    : { name: ch.agentName || BOSS_NAME, role: ch.directoryName ?? null, boss: true };
 }
 
 /** The two lines a tag shows, cut to fit (a role-less tag gives the name the room). */

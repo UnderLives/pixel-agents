@@ -18,6 +18,10 @@ interface PersonaState {
   speechFillerMinutes: number;
   speechBanks: Record<string, Record<string, SpeechLine[]>>;
   audioBase?: string;
+  bossName: string;
+  bossCharacter: number;
+  bossArea: string;
+  bossVisitMinutes: number;
   /** False until the host sent personaSettingsLoaded: upstream behaviour until then. */
   received: boolean;
 }
@@ -31,6 +35,10 @@ let state: PersonaState = {
   speechVolume: 0.8,
   speechFillerMinutes: 0,
   speechBanks: {},
+  bossName: 'Boss',
+  bossCharacter: -1,
+  bossArea: '',
+  bossVisitMinutes: 0,
   received: false,
 };
 const listeners = new Set<() => void>();
@@ -45,6 +53,10 @@ export function setPersonaSettings(msg: PersonaSettingsLoaded): void {
     speechFillerMinutes: msg.speechFillerMinutes,
     speechBanks: msg.speechBanks,
     audioBase: msg.audioBase,
+    bossName: msg.bossName,
+    bossCharacter: msg.bossCharacter,
+    bossArea: msg.bossArea,
+    bossVisitMinutes: msg.bossVisitMinutes,
     received: true,
   };
   for (const l of listeners) l();
@@ -71,6 +83,17 @@ export function allowedPalettesNow(count: number): number[] {
 export function paletteForNameNow(name: string, count: number): number | undefined {
   if (!state.received) return undefined;
   return paletteForName(name, allowedPalettesNow(count), state.characterByName);
+}
+
+/** The sprite every lead wears, or undefined (none configured, or not loaded). */
+export function bossCharacterNow(count: number): number | undefined {
+  const b = state.bossCharacter;
+  return state.received && b >= 0 && b < count ? b : undefined;
+}
+
+/** Area label of the boss's office ('' = none). */
+export function bossArea(): string {
+  return state.received ? state.bossArea : '';
 }
 
 /** A speaker's bank, matched case- and accent-insensitively ("Lea" finds "Léa"). */

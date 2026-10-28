@@ -148,6 +148,29 @@
           "maximum": 240,
           "default": 4,
           "description": "Minutes of silence after which an idle named character says a filler or a word of encouragement. 0 = never."
+        },
+        "pixel-agents.bossName": {
+          "type": "string",
+          "default": "Aytaç",
+          "description": "Name on the lead session's tag (\"★ <name>\", role \"boss\") and the speaker of its lines (speech bank with the same speaker name)."
+        },
+        "pixel-agents.bossCharacter": {
+          "type": "integer",
+          "minimum": -1,
+          "default": 0,
+          "description": "Character (char_N index) every lead session wears, whatever pixel-agents.characterSet says. 0 = the man in the suit. -1 = drawn like any agent."
+        },
+        "pixel-agents.bossArea": {
+          "type": "string",
+          "default": "Direction",
+          "description": "Area label of the lead's own office: the lead takes a seat there first, and named sub-agents (employees) get desks outside it. Empty = upstream seating (sub-agents stand next to their lead)."
+        },
+        "pixel-agents.bossVisitMinutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 240,
+          "default": 3,
+          "description": "While active, the lead walks over to one of its named sub-agents at least this often (it also visits when it hands one a task or messages her). 0 = only on those events."
         }
       }
     }
