@@ -481,7 +481,7 @@ export function mergeCharacterSprites(
 }
 
 /**
- * Load pre-colored character sprites from assets/characters/ (6 PNGs, each 112×96).
+ * Load pre-colored character sprites from assets/characters/ (at least 6 PNGs, each 112×96).
  * Each PNG has 3 direction rows (down, up, right) × 7 frames (16×32 each).
  */
 export async function loadCharacterSprites(
@@ -491,9 +491,12 @@ export async function loadCharacterSprites(
     const charDir = path.join(assetsRoot, 'assets', 'characters');
     const characters: CharacterDirectionSprites[] = [];
 
-    for (let ci = 0; ci < CHAR_COUNT; ci++) {
+    // The first CHAR_COUNT are required; any further contiguous char_N.png are
+    // bundled extras (this fork ships char_6..char_10, see core/src/persona.ts).
+    for (let ci = 0; ; ci++) {
       const filePath = path.join(charDir, `char_${ci}.png`);
       if (!fs.existsSync(filePath)) {
+        if (ci >= CHAR_COUNT) break;
         console.log(`[AssetLoader] No character sprite found at: ${filePath}`);
         return null;
       }

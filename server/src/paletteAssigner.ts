@@ -6,6 +6,7 @@
  */
 
 import { pickDiversePalette } from '../../core/src/paletteUtils.js';
+import { allowedPalettes, type CharacterSet, paletteForName } from '../../core/src/persona.js';
 import type { AgentStateStore } from './agentStateStore.js';
 import { PALETTE_COUNT } from './constants.js';
 import type { AgentState } from './types.js';
@@ -25,6 +26,25 @@ export function setPaletteCount(count: number): void {
 }
 
 /**
+ * Which sprites new agents may wear (`characterSet`) and the fixed sprite of a named
+ * agent (`characterByName`). Set by the host from its settings; 'all' and no names
+ * reproduce upstream's behaviour.
+ */
+export interface CharacterPolicy {
+  characterSet: CharacterSet;
+  characterByName: Record<string, number>;
+}
+let currentPolicy: CharacterPolicy = { characterSet: 'all', characterByName: {} };
+
+export function setCharacterPolicy(policy: CharacterPolicy): void {
+  currentPolicy = policy;
+}
+
+export function getCharacterPolicy(): CharacterPolicy {
+  return currentPolicy;
+}
+
+/**
  * Assign palette and hueShift to an agent if not already set.
  * Uses the diversity algorithm to pick a palette that's least used among
  * existing agents.
@@ -36,14 +56,27 @@ export function assignPaletteIfNeeded(agent: AgentState, store: AgentStateStore)
   if (agent.palette !== undefined) return;
 
   const count = currentPaletteCount;
-  const paletteCounts = new Array(count).fill(0);
-  for (const existing of store.values()) {
-    if (existing.palette !== undefined && existing.palette < count) {
-      paletteCounts[existing.palette]++;
-    }
+  const allowed = allowedPalettes(count, currentPolicy.characterSet);
+  // A named agent (teammate) always wears the same sprite, session after session.
+  if (agent.agentName) {
+    agent.palette = paletteForName(agent.agentName, allowed, currentPolicy.characterByName);
+    agent.hueShift = 0;
+    return;
   }
 
-  const pick = pickDiversePalette(count, paletteCounts);
-  agent.palette = pick.palette;
+  // Diversity over the allowed palettes only. Sprites reserved for named agents
+  // count as used once, so an unnamed agent (the lead) gets a face of its own first.
+  const counts = allowed.map(() => 0);
+  const reserved = new Set(Object.values(currentPolicy.characterByName));
+  allowed.forEach((p, i) => {
+    if (reserved.has(p)) counts[i]++;
+  });
+  for (const existing of store.values()) {
+    const i = existing.palette === undefined ? -1 : allowed.indexOf(existing.palette);
+    if (i >= 0) counts[i]++;
+  }
+
+  const pick = pickDiversePalette(allowed.length, counts);
+  agent.palette = allowed[pick.palette];
   agent.hueShift = pick.hueShift;
 }
