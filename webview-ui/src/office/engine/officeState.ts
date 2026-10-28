@@ -575,6 +575,8 @@ export class OfficeState {
     if (directoryName) {
       ch.directoryName = directoryName;
     }
+    // The boss works from his office: no wandering between turns.
+    if (office && seatId && this.seatZone(seatId) === office) ch.stayAtSeat = true;
     if (!skipSpawnEffect) {
       startMatrixEffect(ch, 'spawn');
     }

@@ -14,17 +14,17 @@ export function MigrationNotice({ onDismiss }: MigrationNoticeProps) {
         className="pixel-panel py-24 px-32 max-w-xl text-center leading-[1.3]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-5xl mb-12 text-accent">We owe you an apology!</div>
+        {/* Fork copy: this fork's revision-2 default layout is what resets the office. */}
+        <div className="text-5xl mb-12 text-accent">A new floor plan!</div>
         <p className="text-xl m-0 mb-12">
-          We've just migrated to fully open-source assets, all built from scratch with love.
-          Unfortunately, this means your previous layout had to be reset.
+          The office now has a Direction office for the boss, next to the lounge, and the employees
+          work at the desks of the open space.
         </p>
-        <p className="text-xl m-0 mb-12">We're really sorry about that.</p>
         <p className="text-xl m-0 mb-12">
-          The good news? This was a one-time thing, and it paves the way for some genuinely exciting
-          updates ahead.
+          Your previous layout was the old default, so it was replaced. If you had made your own,
+          import it again from Layout and point the pixel-agents.bossArea setting at the Area where
+          the boss should sit.
         </p>
-        <p className="text-xl m-0 mb-20">Stay tuned, and thanks for using Pixel Agents!</p>
         <Button variant="accent" size="xl" onClick={onDismiss}>
           Got it
         </Button>

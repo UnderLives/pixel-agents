@@ -107,6 +107,8 @@ export function updateCharacter(
       }
       // If no longer active, stand up and start wandering (after seatTimer expires)
       if (!ch.isActive) {
+        // The boss keeps working at his desk between turns.
+        if (ch.stayAtSeat && ch.seatId) break;
         if (ch.seatTimer > 0) {
           ch.seatTimer -= dt;
           break;

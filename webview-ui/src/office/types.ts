@@ -252,6 +252,8 @@ export interface Character {
   /** A scripted walk-over (the boss visiting an employee): while set, the FSM
    *  neither repaths to the seat nor wanders. `stay` counts down once arrived. */
   visit?: CharacterVisit;
+  /** Never wanders off when idle: stays at its seat (the boss in his office). */
+  stayAtSeat?: boolean;
 
   // -- Agent Teams --
   /** Team name this agent belongs to */

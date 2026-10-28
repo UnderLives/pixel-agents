@@ -34,6 +34,121 @@ The architecture is fully agent-agnostic and editor-agnostic: a typed `HookProvi
 
 ![Pixel Agents screenshot](webview-ui/public/office.png)
 
+## Underlives fork
+
+This is the Underlives fork of Pixel Agents (branch `underlives`, based on
+upstream v1.5.0). It installs as its own extension, **`underlives.pixel-agents-underlives`**, so a
+marketplace update of `pablodelucca.pixel-agents` never replaces it. Everything it adds sits behind
+settings; with `characterSet: "all"`, `speech: "off"`, `bossCharacter: -1`, `bossArea: ""` and no
+`characterByName` it behaves like upstream.
+
+### What it adds
+
+- **Name tags.** Every character carries a small tag above its head: the name in bold, the role
+  below, cut on a word. A sub-agent spawned with a description of the form
+  `<Name> · <domain> · <item>` (e.g. `Linda · vêtements · triage`) shows `Linda` /
+  `vêtements · triage`; any other description is shown cut to fit. Crowded tags stack with a thin
+  leader down to their head. The lead session is the **boss**: a gold `★` tag with its name and
+  the role `boss`.
+- **A women-only cast, a fixed face per name.** `characterSet: "women"` draws agents only from the
+  bundled women (char 1, 3, 5 of Metro City and char 6-10, see credits). A named sub-agent or
+  teammate always wears the same sprite (`characterByName`, else a hash of the name). The boss
+  wears `bossCharacter` (char 0, the man in the suit) whatever the set.
+- **The boss's office and rounds.** The default layout (revision 2) adds a "Direction" office east
+  of the lounge (Area `Direction`). The boss sits there and keeps working at his desk between turns;
+  employees (sub-agents) get free desks in the open space. When the boss hands out a task, messages
+  an employee (`SendMessage`), or at least every `bossVisitMinutes` while active, he walks to her
+  desk, says a short line ("Ça avance, Linda ?"), she answers, and he walks back. When her report
+  comes in he congratulates her.
+- **Speech.** Characters with a speech bank talk in bubbles: on starting a task, building, waiting
+  for the shared lock, reading, editing, running the game, finishing, asking permission, plus idle
+  fillers and encouragements. Lines are picked at random with no repeat among the speaker's last 20. Banks are pre-written JSON (`speech/<speaker>.json`, French, 10 lines per situation to start);
+  nothing is generated at run time. With `speech: "voice"`, a line also plays
+  `~/.pixel-agents/speech/<speaker>/<id>.wav|ogg|mp3` when that file exists
+  (`id` = first 10 hex of the SHA-1 of the line's text). Banks in `~/.pixel-agents/speech/*.json`
+  replace the bundled one of the same speaker.
+
+### Settings (defaults of this fork)
+
+| Setting                            | Default                                                             |                            |
+| ---------------------------------- | ------------------------------------------------------------------- | -------------------------- |
+| `pixel-agents.showNameLabels`      | `true`                                                              | name tags                  |
+| `pixel-agents.characterSet`        | `"women"`                                                           | `all` \| `women`           |
+| `pixel-agents.characterByName`     | `{"Linda":1,"Maya":6,"Nora":5,"Sacha":10,"Iris":7,"Léa":8,"Zoé":3}` | fixed sprite per name      |
+| `pixel-agents.speech`              | `"text"`                                                            | `off` \| `text` \| `voice` |
+| `pixel-agents.speechVolume`        | `0.8`                                                               | 0-1                        |
+| `pixel-agents.speechFillerMinutes` | `4`                                                                 | 0 = no fillers             |
+| `pixel-agents.bossName`            | `"Aytaç"`                                                           |                            |
+| `pixel-agents.bossCharacter`       | `0`                                                                 | -1 = none                  |
+| `pixel-agents.bossArea`            | `"Direction"`                                                       | "" = upstream seating      |
+| `pixel-agents.bossVisitMinutes`    | `3`                                                                 | 0 = only on events         |
+
+The standalone server (`node dist/cli.js`) reads the same keys (without the `pixel-agents.` prefix)
+from a `persona` object in `~/.pixel-agents/config.json`, re-read on every page load.
+
+### Speech and voice tools (`tools/speech/`)
+
+- `make_voices.py`: one fixed voice per speaker, `speech/voices/<slug>.spk` (1024 float32 Qwen3-TTS
+  speaker embedding). Each is a blend of 3 Common Voice speakers (CC0) of the speaker's sex and age,
+  pushed away from their average, so it is nobody's real voice; sources and parameters for every
+  voice are in `speech/voices/RECIPE.json`. Built once and reused: a speaker always sounds the same.
+- `gen_lines.py`: grows each bank to 60-100 lines per situation with a local Qwen
+  (llama-server, `http://127.0.0.1:8091/v1/chat/completions`), with simple semantic de-duplication,
+  varied lengths and openings, and a tone filter (every speaker is motivating; each has her style).
+- `gen_voices.py`: renders every line with its speaker's `.spk` through the Underlives voice runtime
+  (`ul-voice.exe`, qwentts.cpp) into `~/.pixel-agents/speech/<speaker>/`. GPU recommended.
+
+### Phone access: the standalone office over Tailscale
+
+`tools/office/start_office.ps1` starts `dist/cli.js` bound to this machine's **Tailscale IPv4
+address only** (never `0.0.0.0`, never the LAN), port 47231, embedded terminal on, from the game
+folder, and writes the tokened URL to `~/.pixel-agents/office_url.txt` (readable by the user only).
+`-Stop` stops it.
+
+- **The token is a key.** Anyone with the URL who can reach the tailnet gets a shell as you through
+  the office terminal. Never paste it anywhere; it is not in git.
+- **Tailscale only.** The server listens on the 100.x address; the phone must be on the same
+  tailnet. Plain HTTP inside the tailnet (WireGuard-encrypted end to end).
+- **Rotate the token**: `start_office.ps1 -Stop`, then `start_office.ps1 -RotateToken` (every old
+  URL stops working; reopen the new one on each device).
+- **Talking to the boss from the phone**: `+ Agent` in the browser starts a new `claude` session in
+  the game folder, in a terminal the phone sees and types into. A session already open in VS Code
+  **cannot** be attached: the office shows it (and its sub-agents), but only sessions the server
+  started have a terminal there. To continue that conversation from the phone, close it in VS Code
+  and run `/resume` inside a session started with `+ Agent`.
+- **Start at logon (optional)**:
+  `Register-ScheduledTask -TaskName "Pixel Agents office" -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME) -Action (New-ScheduledTaskAction -Execute powershell.exe -Argument '-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "C:\Users\hight\Desktop\pixel-agents\tools\office\start_office.ps1"') -Settings (New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit 0)`
+  (add a delay or retry if Tailscale connects after logon).
+
+### Build, install, update, uninstall
+
+```
+npm install
+npm run package                       # extension + CLI + webview, into dist/
+npx @vscode/vsce package --no-dependencies --allow-missing-repository --skip-license
+code --install-extension pixel-agents-underlives-1.5.0.vsix --force
+```
+
+Update: pull, rebuild, repackage, reinstall with `--force`. Uninstall:
+`code --uninstall-extension underlives.pixel-agents-underlives`.
+
+The fork has its own panel ("Pixel Agents (Underlives)") and commands, so it can sit next to
+upstream's extension, but both share the hook script (`~/.pixel-agents/hooks/claude-hook.js`, the
+same file), the `pixel-agents.*` settings and `~/.pixel-agents/`: **disable** upstream's extension
+(Extensions view → Pixel Agents → Disable) rather than uninstalling it. Uninstalling either one runs
+its uninstall hook, which removes the hook entries from `~/.claude/settings.json`; the remaining one
+then asks once (one click in its panel) to put them back.
+
+### Credits and licences
+
+- Pixel Agents: MIT, © Pablo De Lucca and contributors.
+- Characters 0-5: based on [Metro City by JIK-A-4](https://jik-a-4.itch.io/metrocity-free-topdown-character-pack)
+  (free pack, credit to the author), as bundled upstream.
+- Characters 6-10: rendered by `tools/characters/render_women.mts` from upstream's own pixel
+  wardrobe (branch `stack/5-characters` of pixel-agents-hq/pixel-agents, MIT).
+- Voices: blends of Common Voice speakers (CC0); speaker sources in `speech/voices/RECIPE.json`.
+- Speech lines: written for this fork.
+
 ## Features
 
 - **One agent, one character** — every Claude Code terminal gets its own animated character
