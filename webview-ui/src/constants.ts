@@ -211,6 +211,10 @@ export const SPEECH_FILLER_TICK_MS = 15_000;
 /** Name tag: longest name and role shown before an ellipsis. */
 export const NAME_TAG_NAME_MAX = 18;
 export const NAME_TAG_ROLE_MAX = 30;
+/** Name tag font sizes (CSS px) and the gap between its bottom edge and the head. */
+export const NAME_TAG_NAME_FONT_PX = 14;
+export const NAME_TAG_ROLE_FONT_PX = 11;
+export const NAME_TAG_HEAD_GAP_PX = 14;
 /** Speech bubble max width in CSS px. */
 export const SPEECH_BUBBLE_MAX_WIDTH_PX = 220;
 export const AUTO_ON_FACING_DEPTH = 3;

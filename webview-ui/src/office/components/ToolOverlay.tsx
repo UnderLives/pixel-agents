@@ -18,8 +18,11 @@ import {
   CONTEXT_GAUGE_WIDTH_PX,
   CONTEXT_WARN_THRESHOLD,
   NAME_TAG_BG,
+  NAME_TAG_HEAD_GAP_PX,
   NAME_TAG_NAME_COLOR,
+  NAME_TAG_NAME_FONT_PX,
   NAME_TAG_NAME_MAX,
+  NAME_TAG_ROLE_FONT_PX,
   NAME_TAG_ROLE_MAX,
   OVERLAY_BUBBLE_Z_INDEX,
   OVERLAY_LABEL_SELECTED_Z_INDEX,
@@ -32,6 +35,12 @@ import {
 import type { SubagentCharacter } from '../../hooks/useExtensionMessages.js';
 import { getPersona } from '../../persona/personaState.js';
 import { bubbleFor, pinnedBubbles } from '../../persona/speechRuntime.js';
+import {
+  estimateBubbleHeight,
+  estimateTagSize,
+  layoutTags,
+  type TagBox,
+} from '../../persona/tagLayout.js';
 import type { OfficeState } from '../engine/officeState.js';
 import { overlayProjection } from '../projection.js';
 import { getCachedSprite } from '../sprites/spriteCache.js';
@@ -87,6 +96,15 @@ function nameTagFor(
     return { name: parsed.name, role: parsed.role, boss: false };
   }
   return { name: ch.agentName || BOSS_NAME, role: ch.directoryName ?? null, boss: true };
+}
+
+/** The two lines a tag shows, cut to fit (a role-less tag gives the name the room). */
+function tagText(tag: NameTag): { name: string; role: string | null } {
+  const name = truncateLabel(tag.name, tag.role ? NAME_TAG_NAME_MAX : NAME_TAG_ROLE_MAX);
+  return {
+    name: tag.boss ? `${BOSS_MARKER} ${name}` : name,
+    role: tag.role ? truncateLabel(tag.role, NAME_TAG_ROLE_MAX) : null,
+  };
 }
 
 /** One line of a name tag / panel: "★ Name — role" cut to fit. */
@@ -209,11 +227,53 @@ export function ToolOverlay({
     dpr,
   );
 
+  /** Screen y of a character's tag bottom edge (just above the head). */
+  const tagBottom = (ch: { x: number; y: number; state: string }) =>
+    project.toScreenY(
+      ch.y +
+        (ch.state === CharacterState.TYPE ? CHARACTER_SITTING_OFFSET_PX : 0) -
+        TOOL_OVERLAY_VERTICAL_OFFSET,
+    ) + NAME_TAG_HEAD_GAP_PX;
+
   const selectedId = officeState.selectedAgentId;
   const hoveredId = officeState.hoveredAgentId;
 
   // All character IDs
   const allIds = [...agents, ...subagentCharacters.map((s) => s.id)];
+
+  // Name tags first, laid out together so neighbours stack instead of overlapping.
+  const persona = getPersona();
+  const tags = new Map<number, NameTag>();
+  const tagBoxes: TagBox[] = [];
+  if (persona.showNameLabels) {
+    for (const id of allIds) {
+      const ch = officeState.characters.get(id);
+      if (!ch) continue;
+      const subLabel = ch.isSubagent
+        ? subagentCharacters.find((s) => s.id === id)?.label
+        : undefined;
+      const tag = nameTagFor(ch, subLabel);
+      tags.set(id, tag);
+      const shown = tagText(tag);
+      const size = estimateTagSize(
+        shown.name,
+        shown.role,
+        NAME_TAG_NAME_FONT_PX,
+        NAME_TAG_ROLE_FONT_PX,
+      );
+      // A bubble rides on top of its tag: count it, or it would cover the tag above.
+      const spoken = bubbleFor(id);
+      const bubbleHeight = spoken ? estimateBubbleHeight(spoken, SPEECH_BUBBLE_MAX_WIDTH_PX) : 0;
+      tagBoxes.push({
+        id,
+        x: project.toScreenX(ch.x),
+        bottom: tagBottom(ch),
+        width: Math.max(size.width, spoken ? SPEECH_BUBBLE_MAX_WIDTH_PX : 0),
+        height: size.height + bubbleHeight,
+      });
+    }
+  }
+  const tagLifts = layoutTags(tagBoxes);
 
   return (
     <>
@@ -224,9 +284,7 @@ export function ToolOverlay({
         const isSelected = selectedId === id;
         const isHovered = hoveredId === id;
         const isSub = ch.isSubagent;
-        const persona = getPersona();
-        const subLabel = isSub ? subagentCharacters.find((s) => s.id === id)?.label : undefined;
-        const tag = persona.showNameLabels ? nameTagFor(ch, subLabel) : null;
+        const tag = tags.get(id) ?? null;
         const spoken = bubbleFor(id);
 
         // Speech bubble (permission dots / done checkmark) — rendered here in
@@ -270,18 +328,14 @@ export function ToolOverlay({
         // Name tag (and whatever she is saying) above the head: the persona's
         // always-on label, shown whenever the activity panel is not.
         const headX = project.toScreenX(ch.x);
-        const headY = project.toScreenY(
-          ch.y +
-            (ch.state === CharacterState.TYPE ? CHARACTER_SITTING_OFFSET_PX : 0) -
-            TOOL_OVERLAY_VERTICAL_OFFSET,
-        );
+        const shownTag = tag ? tagText(tag) : null;
         const tagNode =
           tag || spoken ? (
             <div
               className="absolute flex flex-col items-center pointer-events-none"
               style={{
                 left: headX,
-                top: headY + 14,
+                top: tagBottom(ch) - (tagLifts.get(id) ?? 0),
                 transform: 'translate(-50%, -100%)',
                 zIndex: OVERLAY_LABEL_Z_INDEX,
               }}
@@ -297,20 +351,19 @@ export function ToolOverlay({
                   <span
                     className="leading-none"
                     style={{
-                      fontSize: '15px',
+                      fontSize: NAME_TAG_NAME_FONT_PX,
                       fontWeight: 'bold',
                       color: tag.boss ? TEAM_LEAD_COLOR : NAME_TAG_NAME_COLOR,
                     }}
                   >
-                    {tag.boss ? `${BOSS_MARKER} ` : ''}
-                    {truncateLabel(tag.name, tag.role ? NAME_TAG_NAME_MAX : NAME_TAG_ROLE_MAX)}
+                    {shownTag?.name}
                   </span>
-                  {tag.role && (
+                  {shownTag?.role && (
                     <span
                       className="leading-none"
-                      style={{ fontSize: '12px', color: TEAM_ROLE_COLOR }}
+                      style={{ fontSize: NAME_TAG_ROLE_FONT_PX, color: TEAM_ROLE_COLOR }}
                     >
-                      {truncateLabel(tag.role, NAME_TAG_ROLE_MAX)}
+                      {shownTag.role}
                     </span>
                   )}
                 </div>
@@ -318,11 +371,29 @@ export function ToolOverlay({
             </div>
           ) : null;
 
+        // A tag lifted off a crowded spot keeps a thin leader down to its head.
+        const lift = tagNode ? (tagLifts.get(id) ?? 0) : 0;
+        const leaderNode =
+          lift > 0 ? (
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                left: headX,
+                top: tagBottom(ch) - lift,
+                width: 1,
+                height: lift,
+                background: NAME_TAG_BG,
+                zIndex: OVERLAY_LABEL_Z_INDEX,
+              }}
+            />
+          ) : null;
+
         if (!alwaysShowOverlay && !isSelected && !isHovered) {
           if (!bubbleNode && !tagNode) return null;
           return (
             <Fragment key={id}>
               {bubbleNode}
+              {leaderNode}
               {tagNode}
             </Fragment>
           );
@@ -344,6 +415,7 @@ export function ToolOverlay({
           return (
             <Fragment key={id}>
               {bubbleNode}
+              {leaderNode}
               {tagNode}
               <div
                 className="absolute"
