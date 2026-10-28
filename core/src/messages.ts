@@ -307,7 +307,6 @@ export interface PersonaSettingsLoaded {
   speech: SpeechMode;
   speechVolume: number;
   speechFillerMinutes: number;
-  /** The adult `coquine` register is mixed into fillers and visit answers (stripped from the banks when off). */
   speechSpicy: boolean;
   bossName: string;
   bossCharacter: number;

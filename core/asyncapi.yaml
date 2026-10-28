@@ -720,6 +720,7 @@ components:
           speech,
           speechVolume,
           speechFillerMinutes,
+          speechSpicy,
           speechBanks,
           bossName,
           bossCharacter,
@@ -744,6 +745,9 @@ components:
           type: number
         speechFillerMinutes:
           type: number
+        speechSpicy:
+          type: boolean
+          description: The adult coquine register is mixed into fillers and visit answers (stripped from the banks when off).
         bossName:
           type: string
           description: Name on the lead session's tag (its role line reads "boss").
