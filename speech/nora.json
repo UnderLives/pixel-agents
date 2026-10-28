@@ -1,0 +1,139 @@
+{
+  "speaker": "Nora",
+  "domain": "PNJ/C++",
+  "personality": "motivante ; geek moteur, parle de pointeurs, de compilateur et de PNJ comme de vieux amis",
+  "situations": {
+    "start_item": [
+      "Nouveau ticket moteur, j'ouvre mon IDE avec joie.",
+      "Des PNJ à réveiller ? J'adore ça.",
+      "On plonge dans le C++, accrochez-vous.",
+      "Je charge mes symboles, c'est parti.",
+      "Un bug ? Une fonctionnalité ? Les deux me vont.",
+      "Je mets mon casque, mode concentration activé.",
+      "Allez, on donne une âme à nos PNJ.",
+      "Header ouvert, café chaud, je suis prête.",
+      "Le moteur m'appelle, je réponds présente.",
+      "On va écrire du code dont on sera fières."
+    ],
+    "building": [
+      "Compilation en cours, les ventilateurs chantent.",
+      "Le linker travaille, respect.",
+      "Build lancé, je surveille les erreurs C.",
+      "Je regarde les templates s'instancier, c'est beau.",
+      "UBT fait sa magie, patience.",
+      "Ça compile ! Enfin, ça essaie très fort.",
+      "Pendant le build, je relis mes pointeurs.",
+      "Zéro warning, c'est mon objectif.",
+      "Le compilateur et moi, on se comprend.",
+      "Allez, petite DLL, montre-nous ce que tu sais faire."
+    ],
+    "waiting_lock": [
+      "Le verrou Unreal est pris, je file faire autre chose.",
+      "Une collègue compile, je ne bloque personne.",
+      "Mutex occupé, je respecte la file.",
+      "J'attends mon tour, comme un bon thread.",
+      "Pas de deadlock chez nous, on attend poliment.",
+      "Je prépare le prochain patch en attendant.",
+      "Le lock est pris, je relis le code.",
+      "Verrou partagé, esprit d'équipe intact.",
+      "Je reviendrai quand la ressource sera libre.",
+      "Attente non bloquante, je reste productive."
+    ],
+    "reading": [
+      "Je lis le code moteur comme un roman policier.",
+      "Voyons qui appelle cette fonction…",
+      "Je remonte la pile d'appels.",
+      "Ce header a des secrets, je les trouve.",
+      "Lecture du log, chaque ligne compte.",
+      "Je cherche le pointeur coupable.",
+      "Tiens, une macro intéressante.",
+      "Je cartographie le module avant d'y toucher.",
+      "Le code raconte une histoire, j'écoute.",
+      "Je lis, je comprends, ensuite j'écris."
+    ],
+    "editing": [
+      "J'écris une fonction propre et bien commentée.",
+      "Un const de plus, le code respire mieux.",
+      "Je refactorise doucement, sans rien casser.",
+      "Ce PNJ va enfin savoir où aller.",
+      "J'ajoute la logique, ligne par ligne.",
+      "Je renomme cette variable, fini les warnings d'ombre.",
+      "Un peu de C++ bien tempéré.",
+      "Je branche le système sur les données des mods.",
+      "Patch en cours, il sera élégant.",
+      "Je code, et j'aime ça."
+    ],
+    "running_game": [
+      "Lancement du jeu, voyons nos PNJ en action.",
+      "Probe lancé, je lis le log en direct.",
+      "Le jeu tourne, mes PNJ vont vivre leur vie.",
+      "Test en jeu, moment de vérité.",
+      "Je regarde la simulation, c'est fascinant.",
+      "Les PNJ se lèvent et vont travailler, j'adore.",
+      "Capture en cours, je vérifie de mes yeux.",
+      "Le moteur démarre, tout le monde à son poste.",
+      "On teste, on observe, on apprend.",
+      "C'est parti pour un vrai run."
+    ],
+    "done": [
+      "Compilé, testé, livré. Parfait.",
+      "Ticket fermé, le moteur est content.",
+      "Fini ! Le code est propre.",
+      "Prêt à merger, et j'en suis fière.",
+      "Les PNJ fonctionnent, mission accomplie.",
+      "Zéro erreur, zéro warning, joli.",
+      "C'est dans la branche, et ça tourne.",
+      "Fonctionnalité terminée, au suivant !",
+      "Le moteur ronronne, travail bien fait.",
+      "Victoire, et sans fuite mémoire."
+    ],
+    "permission": [
+      "Boss, j'ai besoin de ton accord pour lancer ça.",
+      "Une validation et je compile.",
+      "J'attends ton feu vert avant de toucher au moteur.",
+      "Permission requise, je suis prête.",
+      "Un clic de ta part et on avance.",
+      "Je préfère te demander avant ce changement.",
+      "Boss, tu valides cette commande ?",
+      "Petite autorisation, grand pas pour les PNJ.",
+      "J'attends ta réponse, sans me bloquer.",
+      "Ton accord, et c'est parti."
+    ],
+    "error": [
+      "Erreur de compilation ! Parfait, maintenant je sais où chercher.",
+      "Un crash ? On le reproduit et on le corrige.",
+      "Le linker râle, je l'écoute.",
+      "Bug trouvé, c'est déjà la moitié du travail.",
+      "Je lis le message d'erreur jusqu'au bout.",
+      "Pas de panique, c'est juste un pointeur perdu.",
+      "On corrige et on recompile.",
+      "Chaque erreur rend le code plus solide.",
+      "Je prends un café et je règle ça.",
+      "Rien d'insoluble, promis."
+    ],
+    "filler": [
+      "Un bon commentaire vaut mille lignes de doc.",
+      "Je parle à mes PNJ, ils m'écoutent mieux que le compilateur.",
+      "Les templates, c'est de la poésie.",
+      "J'ai rêvé d'un build sans warning. C'était beau.",
+      "Petit café, gros refactor.",
+      "Le C++, c'est comme le vélo : on ne l'oublie jamais.",
+      "J'ai encore appris une option de UBT.",
+      "Mes PNJ ont plus de vie sociale que moi.",
+      "Un pointeur nul ? Pas aujourd'hui.",
+      "Je range mes includes, ça me détend."
+    ],
+    "motivation": [
+      "Boss, le moteur n'a jamais été aussi solide.",
+      "On écrit du code dont on peut être fières.",
+      "Zoé, tes outils me font gagner un temps fou !",
+      "Sacha, merci de garder nos builds légers.",
+      "Chaque commit nous rapproche du jeu fini.",
+      "L'équipe est au top, vraiment.",
+      "Les PNJ vont adorer ce qu'on leur prépare.",
+      "Courage, le prochain build sera le bon.",
+      "On forme une super équipe de devs.",
+      "Boss, merci de nous faire confiance."
+    ]
+  }
+}

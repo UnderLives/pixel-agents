@@ -1,0 +1,139 @@
+{
+  "speaker": "Zoé",
+  "domain": "outillage",
+  "personality": "motivante ; bricoleuse, parle d'établi, de clés et de scripts comme d'outils de menuisière",
+  "situations": {
+    "start_item": [
+      "Un outil à fabriquer ? Je sors ma caisse à outils !",
+      "Nouvel établi, nouveau projet, je suis ravie.",
+      "On va bricoler quelque chose de solide.",
+      "Tournevis en main, c'est parti.",
+      "Je prends les mesures, puis je visse.",
+      "Un script de plus pour nous simplifier la vie.",
+      "Allez, on automatise tout ça.",
+      "Je relève mes manches.",
+      "Petit outil, grand service, j'y vais.",
+      "Chantier outillage ouvert !"
+    ],
+    "building": [
+      "Ça compile, je range mon établi en attendant.",
+      "Build lancé, j'aiguise mes outils.",
+      "Le moteur tourne, la scie aussi.",
+      "Patience, la colle doit prendre.",
+      "Pendant le build, je huile les engrenages.",
+      "Ça assemble bien, solide comme du chêne.",
+      "Je surveille la machine, tout roule.",
+      "Compilation en cours, je trie mes vis.",
+      "On construit du costaud.",
+      "Allez, petit build, tiens bon."
+    ],
+    "waiting_lock": [
+      "L'atelier est pris, je prépare mes pièces.",
+      "Une collègue utilise la machine, j'attends.",
+      "Verrou occupé, je bricole autre chose.",
+      "Chacune son tour à l'établi.",
+      "J'en profite pour ranger mes outils.",
+      "Pas de souci, je reviens dans un instant.",
+      "Le verrou, c'est pour la sécurité de tout le monde.",
+      "Je patiente, clé à molette en main.",
+      "Pause café en attendant la machine.",
+      "Je garde ma place et ma bonne humeur."
+    ],
+    "reading": [
+      "Je lis le mode d'emploi, toujours.",
+      "Voyons comment ce script est monté.",
+      "Je démonte le code pour le comprendre.",
+      "Je cherche la vis qui coince.",
+      "Lecture des options, il y a de bonnes idées.",
+      "J'inspecte la tuyauterie.",
+      "Tiens, un outil qu'on peut réutiliser.",
+      "Je regarde les plans avant de percer.",
+      "Le README, c'est mon meilleur ami.",
+      "Je vérifie deux fois avant de visser."
+    ],
+    "editing": [
+      "Je resserre ce boulon.",
+      "Un petit réglage, et ça tourne rond.",
+      "J'ajoute une option bien pratique.",
+      "Je ponce les angles du script.",
+      "Je répare la fuite, c'est étanche.",
+      "Une ligne de plus, un clic de moins pour vous.",
+      "J'assemble les pièces du script.",
+      "Je cale tout bien d'équerre.",
+      "Mon outil devient vraiment pratique.",
+      "Bricolage en cours, ça avance bien."
+    ],
+    "running_game": [
+      "Je teste mon outil en conditions réelles.",
+      "Lancement du jeu pour voir si l'outil tient.",
+      "On met la machine en route.",
+      "Test grandeur nature, j'adore.",
+      "Je regarde si tout s'emboîte.",
+      "Le jeu démarre, mes scripts aussi.",
+      "Capture lancée, je vérifie le résultat.",
+      "Essai sur le terrain, allons-y.",
+      "On teste, on ajuste, on recommence.",
+      "Moteur en route, outils prêts."
+    ],
+    "done": [
+      "Outil terminé, solide et pratique.",
+      "Fini ! Ça va nous faire gagner un temps fou.",
+      "C'est vissé, c'est réglé, c'est prêt.",
+      "Mission bricolage accomplie.",
+      "L'établi est rangé, l'outil fonctionne.",
+      "Terminé, et ça tourne comme une horloge.",
+      "Encore un outil pour l'équipe !",
+      "Livré, testé, approuvé.",
+      "Fini, et je suis fière de ce petit bijou.",
+      "Au suivant, la caisse à outils est prête."
+    ],
+    "permission": [
+      "Boss, j'ai besoin de ton accord pour démarrer la machine.",
+      "Une validation avant que je perce ?",
+      "J'attends ton feu vert, perceuse en main.",
+      "Tu confirmes ? Je préfère vérifier.",
+      "Un clic, et je reprends le chantier.",
+      "Permission demandée, outils prêts.",
+      "Boss, tu valides ce réglage ?",
+      "Ton accord, et on visse.",
+      "J'attends ta réponse, tranquille.",
+      "Petite validation, et c'est parti."
+    ],
+    "error": [
+      "Une vis a sauté, je la remets.",
+      "Petit pépin, je sors la clé à molette.",
+      "Ça coince ? On démonte et on comprend.",
+      "Erreur trouvée, c'est presque réparé.",
+      "On recolle, on reserre, on repart.",
+      "Pas de panique, j'ai l'outil qu'il faut.",
+      "Un mauvais réglage, je corrige.",
+      "Chaque panne rend l'outil plus robuste.",
+      "Je respire, je répare.",
+      "On recommence, et ce sera mieux."
+    ],
+    "filler": [
+      "Un bon outil, c'est un outil qu'on oublie.",
+      "J'ai une boîte pleine de vis orphelines.",
+      "Je rêve d'un atelier avec un mur d'outils.",
+      "Automatiser, c'est offrir du temps aux autres.",
+      "Ma clé à molette et moi, c'est sérieux.",
+      "Petit café, grand script.",
+      "J'aime l'odeur du bois et des logs propres.",
+      "Un script bien rangé, c'est reposant.",
+      "Il n'y a pas de petit outil.",
+      "Je bricole même mes raccourcis clavier."
+    ],
+    "motivation": [
+      "Boss, tes outils sont affûtés, on peut tout faire !",
+      "L'équipe est une belle machine bien huilée.",
+      "Nora, ton code et mes outils, quel duo !",
+      "Courage, on construit du solide.",
+      "Sacha, mes scripts sont à ton service.",
+      "Chaque outil qu'on fait aide toute l'équipe.",
+      "Je suis fière de notre atelier.",
+      "On avance pièce par pièce, et ça tient.",
+      "Bravo à toutes, beau travail d'équipe.",
+      "Boss, l'atelier tourne à plein régime !"
+    ]
+  }
+}

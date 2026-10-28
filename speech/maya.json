@@ -1,0 +1,139 @@
+{
+  "speaker": "Maya",
+  "domain": "pièces",
+  "personality": "motivante ; posée, œil d'architecte, parle de lumière, de plans et de proportions",
+  "situations": {
+    "start_item": [
+      "Je déroule le plan, on va faire une belle pièce.",
+      "Nouvelle salle à aménager. J'aime déjà la lumière.",
+      "On commence par les murs, le reste trouvera sa place.",
+      "Je prends du recul pour bien voir l'ensemble.",
+      "Une pièce de plus à rendre vivante, avec plaisir.",
+      "Équerre et crayon en main, on y va calmement.",
+      "Je visualise déjà le mobilier, ça va être harmonieux.",
+      "Chaque pièce raconte quelque chose. Écoutons celle-ci.",
+      "On pose les fondations, doucement mais sûrement.",
+      "Belle surface. On va en faire un lieu où l'on a envie d'entrer."
+    ],
+    "building": [
+      "Le chantier compile, je vérifie les cotes.",
+      "La construction avance, pierre après pierre.",
+      "Build en cours, le temps de boire un thé.",
+      "On bâtit solide, ça prend le temps qu'il faut.",
+      "Pendant que ça compile, je dessine la suite.",
+      "Les fondations se coulent, patience.",
+      "Ça monte bien, la structure est saine.",
+      "Je laisse le moteur poser les poutres.",
+      "Compilation calme, chantier propre.",
+      "Un bon build, c'est comme un bon béton : il faut qu'il prenne."
+    ],
+    "waiting_lock": [
+      "Le chantier est occupé, j'attends mon créneau.",
+      "Une collègue a les clés, je patiente sereinement.",
+      "J'en profite pour revoir mes plans.",
+      "Le verrou est pris, je mesure la suite.",
+      "Chaque ouvrière à son tour, c'est plus sûr.",
+      "Je respire, la place se libérera.",
+      "Pause d'architecte : on observe avant d'agir.",
+      "L'atelier est plein, je prépare mes croquis.",
+      "Je garde mon tour, sans me presser.",
+      "Attendre fait partie du métier."
+    ],
+    "reading": [
+      "J'étudie le plan avant de déplacer quoi que ce soit.",
+      "Voyons comment cette pièce est organisée.",
+      "Je lis la disposition, tout a une raison.",
+      "Je repère les circulations, c'est essentiel.",
+      "Lecture du cahier des charges, en détail.",
+      "J'observe les proportions, elles sont intéressantes.",
+      "Je cherche où passe la lumière.",
+      "Ce fichier a une belle structure, on peut bâtir dessus.",
+      "Je relis la grammaire de la pièce.",
+      "Un bon diagnostic vaut mieux qu'une rénovation ratée."
+    ],
+    "editing": [
+      "Je décale ce meuble de quelques centimètres. Mieux.",
+      "On aligne, on équilibre, on respire.",
+      "Je redessine ce coin, il sera plus accueillant.",
+      "Un fauteuil ici, et la pièce prend vie.",
+      "Je corrige l'aplomb, c'est plus juste.",
+      "Je recentre la composition.",
+      "Cette lampe mérite une meilleure place.",
+      "J'ajuste les volumes, tout devient lisible.",
+      "On aère, on dégage les passages.",
+      "Petit à petit, l'espace se met à parler."
+    ],
+    "running_game": [
+      "Visite de chantier en jeu, allons voir.",
+      "Je lance la pièce, regardons la lumière.",
+      "Capture d'écran en cours, cadrage d'architecte.",
+      "Je fais le tour de la pièce comme une visiteuse.",
+      "On vérifie que tout tient debout.",
+      "La pièce prend vie à l'écran, quel plaisir.",
+      "Je regarde qui se tient où, chaque place compte.",
+      "Le jeu tourne, je note les détails.",
+      "Inauguration ! Enfin, presque.",
+      "On voit en vrai ce qu'on a dessiné."
+    ],
+    "done": [
+      "La pièce est terminée. Elle respire bien.",
+      "Plan livré, proportions respectées.",
+      "Fini. J'aime beaucoup le résultat.",
+      "Remise des clés : tout est en ordre.",
+      "Chantier propre, travail accompli.",
+      "La lumière tombe exactement où il faut.",
+      "C'est habitable, et même agréable.",
+      "Encore une belle pièce pour notre ville.",
+      "Terminé, et je n'y changerais rien.",
+      "Mission accomplie, l'espace est harmonieux."
+    ],
+    "permission": [
+      "Boss, j'ai besoin de ta validation sur le plan.",
+      "Une signature pour le permis de construire ?",
+      "Je t'attends avant de poser ce mur.",
+      "Ton accord, et je continue le chantier.",
+      "Une petite validation, en toute sérénité.",
+      "J'aimerais ton avis avant de bouger ce meuble.",
+      "Boss, un clic et on reprend les travaux.",
+      "Permission demandée, je reste disponible.",
+      "Je préfère confirmer avec toi d'abord.",
+      "Feu vert ? Le chantier attend."
+    ],
+    "error": [
+      "Un mur de travers. Je le redresse.",
+      "Petite erreur de cote, rien de grave.",
+      "On recommence ce coin, calmement.",
+      "Je reprends le plan, ça arrive.",
+      "Une fissure ? On la répare proprement.",
+      "Erreur détectée tôt, c'est une bonne nouvelle.",
+      "Je recalcule, tout va bien se passer.",
+      "On ajuste et on repart.",
+      "Ce n'est qu'un brouillon de plus.",
+      "Je respire, je corrige, j'avance."
+    ],
+    "filler": [
+      "Une bonne pièce, c'est d'abord une bonne lumière.",
+      "Je collectionne les plans de vieux immeubles.",
+      "Les escaliers sont des sculptures qu'on utilise.",
+      "Je rêve d'une bibliothèque en bois clair.",
+      "Le vide aussi, ça se dessine.",
+      "Un thé vert, et je repars.",
+      "Les plantes rendent tout plus vivant.",
+      "Je mesure tout, même mon bureau.",
+      "Une ville, c'est une conversation entre bâtiments.",
+      "J'adore le calme d'un plan bien rangé."
+    ],
+    "motivation": [
+      "Boss, notre ville prend une allure superbe.",
+      "Chaque pièce qu'on finit rend le jeu plus vrai.",
+      "Linda, tes vêtements vont si bien dans mes décors.",
+      "On construit quelque chose de solide, ensemble.",
+      "Pas à pas, on bâtit une belle chose.",
+      "Je suis fière de ce qu'on fait ici.",
+      "Iris, tes mouvements donnent vie à mes pièces.",
+      "Gardons le cap, le plan est bon.",
+      "Bravo à toutes, l'ensemble est harmonieux.",
+      "Boss, ton office est le plus bel immeuble de la ville."
+    ]
+  }
+}

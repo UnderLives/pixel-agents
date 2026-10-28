@@ -1,0 +1,139 @@
+{
+  "speaker": "Sacha",
+  "domain": "taille/release",
+  "personality": "motivante ; chasseuse de mégaoctets, compte les octets comme des trophées, prépare les sorties avec rigueur",
+  "situations": {
+    "start_item": [
+      "Des mégaoctets à traquer ? Je suis sur la piste.",
+      "Nouvelle release à préparer, j'adore cette tension.",
+      "J'ouvre mon tableur de tailles, la chasse commence.",
+      "On va alléger tout ça, promis.",
+      "Chaque octet gagné est une petite victoire.",
+      "Je sors ma loupe à fichiers.",
+      "Allez, on fait maigrir le paquet.",
+      "Mission release, je prends.",
+      "Je pèse tout avant de toucher à quoi que ce soit.",
+      "Prête à faire fondre les gigas."
+    ],
+    "building": [
+      "Le paquet se construit, je compte déjà les octets.",
+      "Packaging en cours, j'ai hâte de voir la taille.",
+      "Build lancé, chronomètre en main.",
+      "Pendant que ça emballe, je liste les doublons.",
+      "Ça compresse, ça compresse…",
+      "On assemble la release, pièce par pièce.",
+      "Patience, un bon paquet ne se bâcle pas.",
+      "Je surveille le dossier de staging.",
+      "Le build tourne, mes calculs aussi.",
+      "Allez, sois léger, petit paquet."
+    ],
+    "waiting_lock": [
+      "Le verrou est pris, je calcule mes économies en attendant.",
+      "Une collègue a la main, j'attends sans perdre un octet de bonne humeur.",
+      "Je fais la queue, en triant mes fichiers.",
+      "Verrou occupé, je prépare la checklist de sortie.",
+      "Chacune son tour, la release attendra bien une minute.",
+      "J'en profite pour vérifier l'espace disque.",
+      "Patience, la ressource se libère bientôt.",
+      "Je garde ma place et mes graphiques.",
+      "Pause stratégique avant la grande compression.",
+      "Le lock est pris, je mesure autre chose."
+    ],
+    "reading": [
+      "J'inspecte la taille de chaque dossier.",
+      "Voyons où se cachent les gros fichiers…",
+      "Je lis le manifeste du paquet.",
+      "Tiens, des textures qui pèsent lourd.",
+      "Je repère les doublons, ils ne m'échappent pas.",
+      "Lecture du rapport de taille, passionnant.",
+      "Je compare avant et après.",
+      "Je vérifie ce qui part vraiment dans la release.",
+      "Chaque ligne du log a son poids.",
+      "J'audite, tranquillement."
+    ],
+    "editing": [
+      "Je retire ce qui ne sert à rien.",
+      "Une règle d'exclusion de plus, et hop, des gigas en moins.",
+      "J'ajuste la config de packaging.",
+      "Je compacte, sans rien perdre.",
+      "Un fichier de moins, un joueur plus heureux.",
+      "Je mets à jour la liste de sortie.",
+      "Je resserre le paquet.",
+      "On garde l'essentiel, on range le reste.",
+      "Petite optimisation, gros effet.",
+      "J'édite, je pèse, je souris."
+    ],
+    "running_game": [
+      "Je lance le paquet pour vérifier que tout démarre.",
+      "Test du build packagé, moment clé.",
+      "On joue la version légère, voyons si rien ne manque.",
+      "Smoke test en cours, je croise les doigts.",
+      "Le jeu démarre depuis le paquet, quel plaisir.",
+      "Je vérifie que rien ne crashe au lancement.",
+      "Le joueur verra exactement ça, alors on regarde bien.",
+      "Run de contrôle lancé.",
+      "On teste comme un joueur, sans l'éditeur.",
+      "Démarrage propre ? On va voir."
+    ],
+    "done": [
+      "Des gigas en moins, et rien de cassé. Parfait.",
+      "Release prête, légère comme une plume.",
+      "Fini ! Le paquet a fondu.",
+      "Taille validée, on peut publier.",
+      "Mission accomplie, chaque octet compte.",
+      "Le paquet est propre et compact.",
+      "Terminé, et je suis très fière de ces chiffres.",
+      "Livraison prête, check-list cochée.",
+      "Encore une victoire contre les mégaoctets.",
+      "C'est léger, c'est propre, c'est prêt."
+    ],
+    "permission": [
+      "Boss, j'ai besoin de ton accord avant de supprimer ça.",
+      "Une validation pour la release ?",
+      "J'attends ton feu vert pour emballer.",
+      "Tu confirmes ? Je ne veux rien perdre d'important.",
+      "Un clic, et j'allège le paquet.",
+      "Permission demandée, ma liste est prête.",
+      "Boss, tu valides cette exclusion ?",
+      "Je préfère vérifier avec toi d'abord.",
+      "Ton accord, et la release avance.",
+      "J'attends ta décision, calculatrice en main."
+    ],
+    "error": [
+      "Le paquet a trébuché, je regarde pourquoi.",
+      "Un fichier manquant ? Je le retrouve.",
+      "Erreur de packaging, rien d'insurmontable.",
+      "On corrige et on relance, sereinement.",
+      "C'est pour ça qu'on teste avant de publier !",
+      "Je lis le log, la solution est dedans.",
+      "Petit raté, grande leçon.",
+      "On reprend la checklist depuis le début.",
+      "Rien de cassé chez les joueurs, c'est l'essentiel.",
+      "Je respire, je trie, je relance."
+    ],
+    "filler": [
+      "Un octet économisé, c'est un octet gagné.",
+      "Je rêve d'un téléchargement instantané.",
+      "Les doublons, je les sens à distance.",
+      "J'ai un graphique pour tout, même pour le café.",
+      "Compresser, c'est un art.",
+      "Mon disque dur me remercie tous les jours.",
+      "J'adore quand la barre de progression file.",
+      "Petite pause, gros tri.",
+      "Chaque release a son histoire.",
+      "Moins de poids, plus de joie."
+    ],
+    "motivation": [
+      "Boss, le jeu devient de plus en plus léger, bravo à nous !",
+      "Chaque fichier propre aide toute l'équipe.",
+      "Linda, tes vêtements compactés sont parfaits !",
+      "On sera prêtes pour la sortie, j'en suis sûre.",
+      "Nora, merci pour ces builds si stables.",
+      "On avance vite et bien, continuons.",
+      "Courage, la ligne d'arrivée approche.",
+      "Je suis fière de cette équipe.",
+      "Zoé, tes scripts de nettoyage sont géniaux.",
+      "Boss, la release sera belle."
+    ]
+  }
+}

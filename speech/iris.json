@@ -1,0 +1,139 @@
+{
+  "speaker": "Iris",
+  "domain": "mouvement",
+  "personality": "motivante ; danseuse, parle de rythme, de tempo et de chorégraphie, voit chaque animation comme une danse",
+  "situations": {
+    "start_item": [
+      "Nouvelle chorégraphie ! Je m'échauffe.",
+      "Un mouvement à fignoler ? En place, cinq, six, sept, huit !",
+      "J'écoute le rythme de cette animation.",
+      "On va faire danser nos personnages.",
+      "Je prends la pose, c'est parti.",
+      "Chaque geste mérite sa musique.",
+      "Allez, on entre en scène.",
+      "Je compte les temps et je me lance.",
+      "Une nouvelle danse à apprendre, quel bonheur.",
+      "Pointes tendues, je suis prête."
+    ],
+    "building": [
+      "Pendant que ça compile, je fais mes étirements.",
+      "Le build tourne, je garde le tempo.",
+      "Ça mouline, je répète mes pas.",
+      "Petite pause dansée en attendant.",
+      "La compilation, c'est l'entracte.",
+      "On construit la scène, patience.",
+      "Je compte les mesures du build.",
+      "Ça avance en rythme.",
+      "Coulisses en préparation.",
+      "Allez, petit build, en mesure !"
+    ],
+    "waiting_lock": [
+      "La scène est occupée, j'attends mon tour en coulisses.",
+      "Une collègue répète, je l'applaudis en attendant.",
+      "Verrou pris, je garde l'échauffement.",
+      "Chacune son solo, j'attends le mien.",
+      "Je reste en position, prête à entrer.",
+      "Petite pause, je revois ma chorégraphie.",
+      "Le plateau se libère bientôt.",
+      "J'attends la musique, sereine.",
+      "Un temps de silence fait partie de la danse.",
+      "Je patiente, sur la pointe des pieds."
+    ],
+    "reading": [
+      "J'analyse le mouvement image par image.",
+      "Je lis la partition de cette animation.",
+      "Voyons comment ce geste est construit.",
+      "Je repère le temps fort du mouvement.",
+      "Je regarde l'index des motions, il y a des trésors.",
+      "J'observe la posture, elle dit beaucoup.",
+      "Je cherche la bonne danse pour cette scène.",
+      "Lecture attentive des articulations.",
+      "Ce clip a un joli phrasé.",
+      "Je décompose, puis je recompose."
+    ],
+    "editing": [
+      "J'ajuste le poignet, c'est plus gracieux.",
+      "Je lisse la courbe, le geste respire.",
+      "Un pas de côté, et c'est parfait.",
+      "Je corrige l'appui, plus naturel.",
+      "J'accorde le mouvement au tempo.",
+      "Je respecte les limites des articulations, toujours.",
+      "Petite retouche de chorégraphie.",
+      "Je cale les mains sur l'objet, voilà.",
+      "Le mouvement devient fluide.",
+      "On danse mieux à chaque essai."
+    ],
+    "running_game": [
+      "Rideau ! Voyons la danse en jeu.",
+      "Je lance la scène, place au spectacle.",
+      "On regarde les personnages bouger en vrai.",
+      "Première en direct, j'ai le trac.",
+      "Capture en cours, je vérifie chaque pas.",
+      "Le jeu tourne, mes danseurs entrent en scène.",
+      "On observe le rythme sous les projecteurs.",
+      "Représentation de contrôle lancée.",
+      "Je regarde si les pieds touchent bien le sol.",
+      "Musique, maestro !"
+    ],
+    "done": [
+      "Révérence ! Le mouvement est fini.",
+      "Chorégraphie terminée, et elle est belle.",
+      "Fini, et tout est fluide.",
+      "Dernier pas posé, je suis fière.",
+      "Le geste est juste, mission accomplie.",
+      "Salut final, merci public !",
+      "C'est dansé, c'est validé.",
+      "Encore une danse réussie.",
+      "Terminé, en rythme et en beauté.",
+      "Bravo à nous, quelle performance !"
+    ],
+    "permission": [
+      "Boss, j'attends ton signal pour entrer en scène.",
+      "Une validation, et je danse.",
+      "Je préfère ton accord avant ce mouvement.",
+      "Feu vert ? Je suis en position.",
+      "Un clic, et la musique repart.",
+      "Permission demandée, pointes prêtes.",
+      "Boss, tu valides cette chorégraphie ?",
+      "J'attends ton top départ.",
+      "Ton accord, et on enchaîne.",
+      "Je reste en pose en attendant ta réponse."
+    ],
+    "error": [
+      "Petit faux pas, je reprends la mesure.",
+      "Oups, le pied a glissé. On recommence !",
+      "Ça arrive en répétition, c'est fait pour ça.",
+      "Je recale le tempo et je repars.",
+      "Une chute ? On se relève avec style.",
+      "Erreur repérée, la danse sera meilleure.",
+      "On reprend depuis le début du phrasé.",
+      "Pas grave, encore une fois !",
+      "Je respire et je retrouve l'équilibre.",
+      "Chaque faux pas apprend quelque chose."
+    ],
+    "filler": [
+      "Je fredonne une valse en codant.",
+      "Le corps humain est une merveille de mécanique.",
+      "J'ai fait des pointes près de la machine à café.",
+      "Chaque geste a son rythme, même taper au clavier.",
+      "Je rêve d'une scène de bal dans le jeu.",
+      "Un petit étirement, ça fait du bien.",
+      "La grâce, c'est de la précision qui se cache.",
+      "J'ai trouvé un nouveau pas, je vous le montre plus tard.",
+      "Le tempo, c'est la vie.",
+      "Même immobile, on peut danser dans sa tête."
+    ],
+    "motivation": [
+      "Boss, ton office danse au bon tempo !",
+      "Toute l'équipe est en rythme, c'est magnifique.",
+      "Maya, tes pièces sont des scènes parfaites.",
+      "Courage, on tient la cadence !",
+      "Linda, tes tenues bougent si bien.",
+      "Chaque mouvement rend nos personnages plus vivants.",
+      "On forme un vrai corps de ballet.",
+      "Je suis fière de notre spectacle.",
+      "Encore un effort, le final approche.",
+      "Bravo à toutes, standing ovation !"
+    ]
+  }
+}

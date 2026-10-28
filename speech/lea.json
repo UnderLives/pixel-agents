@@ -1,0 +1,139 @@
+{
+  "speaker": "Léa",
+  "domain": "traduction",
+  "personality": "motivante ; polyglotte, glisse des mots d'autres langues, amoureuse des nuances",
+  "situations": {
+    "start_item": [
+      "Des textes à traduire ? Avec plaisir, con piacere !",
+      "Nouvelle langue au menu, j'ouvre mes dictionnaires.",
+      "On va trouver le mot juste, comme toujours.",
+      "Let's go, vamos, on y va !",
+      "Chaque phrase mérite sa nuance.",
+      "Je prépare mes glossaires.",
+      "Allez, on fait parler le jeu au monde entier.",
+      "Bereit ! Je suis prête.",
+      "Une traduction, c'est un voyage. Embarquement !",
+      "Je respire le texte avant de le traduire."
+    ],
+    "building": [
+      "Pendant le build, je révise mes conjugaisons.",
+      "Ça compile, et moi je relis.",
+      "Patience, paciencia, Geduld…",
+      "Le moteur assemble les phrases.",
+      "Build en cours, je prépare les accents.",
+      "Je vérifie les caractères spéciaux en attendant.",
+      "On construit un jeu qui parle sept langues.",
+      "Ça avance, piano piano.",
+      "Je relis mes notes de traduction.",
+      "Allez, petit build, sans faute d'orthographe."
+    ],
+    "waiting_lock": [
+      "Le verrou est pris, j'attends avec le sourire.",
+      "Une collègue a la main, je relis mes textes.",
+      "J'attends mon tour, un peu comme à la douane.",
+      "Momentito, la place se libère bientôt.",
+      "Je patiente en apprenant un mot nouveau.",
+      "Pas de souci, je prépare la suite.",
+      "On partage, c'est universel.",
+      "Je garde ma place dans la file.",
+      "Pause lexicale en attendant.",
+      "Bientôt mon tour, je reste prête."
+    ],
+    "reading": [
+      "Je lis le texte source, en entier d'abord.",
+      "Voyons le contexte de cette réplique.",
+      "Je cherche le ton de la scène.",
+      "Ce mot a trois sens, je choisis le bon.",
+      "Je repère les expressions idiomatiques.",
+      "Lecture attentive, rien ne se perd.",
+      "J'écoute la voix du personnage.",
+      "Je compare avec la version d'origine.",
+      "Tiens, un jeu de mots à préserver.",
+      "Comprendre avant de traduire, toujours."
+    ],
+    "editing": [
+      "Je trouve la tournure parfaite.",
+      "Un accent ici, une virgule là.",
+      "Je traduis avec le cœur et la précision.",
+      "Je garde le ton, je change les mots.",
+      "Cette phrase sonne enfin naturelle.",
+      "J'adapte la blague, elle fera rire partout.",
+      "Je polis la traduction.",
+      "Le sens est là, la musique aussi.",
+      "Je mets à jour le fichier de langue.",
+      "Mot après mot, ça prend forme."
+    ],
+    "running_game": [
+      "Je lance le jeu pour lire mes textes en situation.",
+      "Voyons si tout rentre dans les bulles.",
+      "Test en jeu, langue par langue.",
+      "Je vérifie que les accents s'affichent bien.",
+      "Le jeu parle ! Écoutons-le.",
+      "Capture en cours, je relis à l'écran.",
+      "On teste comme une joueuse étrangère.",
+      "Je cherche les textes qui débordent.",
+      "Démarrage, et bienvenue, welcome, willkommen !",
+      "On regarde la traduction vivre."
+    ],
+    "done": [
+      "Traduction terminée, et elle sonne juste.",
+      "Fini ! Le jeu parle une langue de plus.",
+      "Mission accomplie, misión cumplida.",
+      "Tout est traduit, relu, validé.",
+      "Le mot juste partout, j'en suis fière.",
+      "C'est fait, et c'est beau dans toutes les langues.",
+      "Terminé ! Grazie mille à l'équipe.",
+      "Encore un texte qui voyage.",
+      "Fertig ! Et sans faute.",
+      "Bravo à nous, le monde peut jouer."
+    ],
+    "permission": [
+      "Boss, j'ai besoin de ton accord pour continuer.",
+      "Une validation, por favor ?",
+      "J'attends ton feu vert avant de publier ces textes.",
+      "Tu confirmes ? Je préfère être sûre.",
+      "Un clic, et je reprends la traduction.",
+      "Permission demandée, dictionnaire en main.",
+      "Boss, tu valides cette tournure ?",
+      "Ton accord, et on avance.",
+      "J'attends ta réponse, sans stress.",
+      "Petite validation, grande nuance."
+    ],
+    "error": [
+      "Oups, un faux ami ! Je corrige.",
+      "Petite erreur, on la traduit en leçon.",
+      "Un caractère mal encodé, je m'en occupe.",
+      "Ça arrive, même aux polyglottes.",
+      "On reprend la phrase, calmement.",
+      "Erreur trouvée, c'est déjà réglé à moitié.",
+      "Pas de panique, no pasa nada.",
+      "Je relis et je répare.",
+      "Une coquille ? Plus pour longtemps.",
+      "On recommence, en mieux."
+    ],
+    "filler": [
+      "Saviez-vous qu'il existe des mots intraduisibles ? J'adore.",
+      "Je rêve en trois langues, parfois quatre.",
+      "Le mot « saudade » me touche toujours.",
+      "Un bon dictionnaire, c'est un ami fidèle.",
+      "Je collectionne les expressions drôles.",
+      "Petit café, ou cafecito, ou Kaffee…",
+      "Chaque langue voit le monde autrement.",
+      "J'ai appris un proverbe ce matin.",
+      "Traduire, c'est écouter deux fois.",
+      "Les accents, c'est la musique des mots."
+    ],
+    "motivation": [
+      "Boss, notre jeu va parler au monde entier !",
+      "Bravo l'équipe, vous êtes formidables, wunderbar !",
+      "Nora, tes textes de PNJ sont un régal à traduire.",
+      "Ensemble, on va loin, juntas llegamos lejos.",
+      "Courage, chaque mot compte.",
+      "Je suis fière de cette équipe multilingue.",
+      "Linda, tes noms de vêtements sont si jolis.",
+      "On est sur la bonne voie, avanti !",
+      "Encore un effort, et c'est parfait.",
+      "Boss, grazie pour ta confiance !"
+    ]
+  }
+}

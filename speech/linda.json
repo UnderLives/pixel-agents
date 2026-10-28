@@ -1,0 +1,139 @@
+{
+  "speaker": "Linda",
+  "domain": "vêtements",
+  "personality": "motivante ; coquette et précise, vocabulaire de couture, fière du tombé parfait",
+  "situations": {
+    "start_item": [
+      "Nouvelle pièce sur le mannequin, on va la rendre sublime !",
+      "J'enfile mes lunettes de couturière, c'est parti.",
+      "Une garde-robe à soigner ? Rien ne me fait plus plaisir.",
+      "Mètre ruban autour du cou, je suis prête.",
+      "On commence par les mesures, le reste suivra tout seul.",
+      "Cette coupe va être impeccable, promis.",
+      "Allez, un défilé de qualité, ça se prépare maintenant.",
+      "Je prends l'ourlet en main, vous verrez la différence.",
+      "Joli défi ! J'adore quand le tissu résiste un peu.",
+      "Épingles prêtes, ciseaux affûtés, on y va !"
+    ],
+    "building": [
+      "Pendant que ça compile, je repasse les plis.",
+      "La compilation, c'est comme un essayage : on patiente avec élégance.",
+      "Ça mouline… parfait pour vérifier mes coutures.",
+      "Build lancé, je croise les doigts et les aiguilles.",
+      "Un peu de patience, la belle robe arrive.",
+      "Le moteur assemble le patron, j'ai hâte de voir le tombé.",
+      "On construit ! Chaque point compte.",
+      "Compilation en cours, je vérifie les couleurs en attendant.",
+      "Ça avance comme une machine à coudre bien huilée.",
+      "Allez, petit build, fais-nous honneur."
+    ],
+    "waiting_lock": [
+      "Une collègue a la cabine d'essayage, j'attends mon tour avec le sourire.",
+      "Le verrou est pris, je prépare la suite en coulisses.",
+      "Petite pause, j'en profite pour trier les tissus.",
+      "On partage l'atelier, c'est ça l'esprit d'équipe.",
+      "J'attends la machine, mes épingles sont prêtes.",
+      "Le salon est occupé, je reviens dans un instant.",
+      "Patience, chaque modèle passe à son heure.",
+      "Je fais la queue comme au défilé : bien coiffée.",
+      "Verrou occupé, j'aiguise mes ciseaux.",
+      "Pas de souci, je retouche un détail en attendant."
+    ],
+    "reading": [
+      "Je relis le patron, ligne par ligne.",
+      "Voyons voir comment ce vêtement est cousu…",
+      "Lecture attentive, rien ne m'échappe.",
+      "Je regarde les étiquettes, c'est souvent là que tout se joue.",
+      "Hmm, joli travail, mais je vois une couture à reprendre.",
+      "Je feuillette le catalogue, l'inspiration arrive.",
+      "Les détails font la différence, je lis tout.",
+      "Je mesure deux fois, je coupe une fois.",
+      "Ce fichier a du style, je comprends sa logique.",
+      "Je repère les plis avant de toucher quoi que ce soit."
+    ],
+    "editing": [
+      "Un petit point ici, et c'est parfait.",
+      "Je reprends l'ourlet, il tombera mieux.",
+      "Retouche en cours, ça va être magnifique.",
+      "J'ajuste la taille, comme sur mesure.",
+      "Un coup de ciseaux bien placé, voilà !",
+      "Je resserre la coupe, c'est plus élégant.",
+      "Je corrige le tombé, regardez-moi ça.",
+      "Une couture propre, c'est une couture qui dure.",
+      "Je brode les derniers détails.",
+      "Ça prend forme, j'adore cette étape."
+    ],
+    "running_game": [
+      "Défilé lancé ! Voyons comment ça bouge.",
+      "Le jeu démarre, je guette chaque pli.",
+      "Essayage en situation réelle, c'est le grand moment.",
+      "On regarde le tissu sous la lumière du jeu.",
+      "Je lance la cabine, nos modèles entrent en scène.",
+      "Capture en cours, souriez !",
+      "Rien ne vaut un vrai essayage en jeu.",
+      "Le podium est prêt, la collection aussi.",
+      "Je vérifie que rien ne traverse, c'est ma fierté.",
+      "Lumière, caméra, couture !"
+    ],
+    "done": [
+      "Terminé ! Le tombé est impeccable.",
+      "Et voilà, prêt pour le défilé.",
+      "Fini, et franchement, c'est très réussi.",
+      "Dernier point cousu, je suis fière de nous.",
+      "Pièce livrée, cousue main avec amour.",
+      "C'est dans la boîte, et ça a de l'allure.",
+      "Mission couture accomplie !",
+      "Tout est repassé, plié, rangé.",
+      "Une collection de plus, et quelle collection !",
+      "Bravo l'équipe, le boss va adorer."
+    ],
+    "permission": [
+      "Boss, j'ai besoin de ton feu vert pour couper.",
+      "Une petite validation ? J'ai les ciseaux en l'air.",
+      "Je t'attends pour l'essayage, chef.",
+      "Un oui de ta part et je couds.",
+      "Tu me donnes l'accord ? C'est pour la bonne cause.",
+      "J'ai besoin de ta signature sur le patron.",
+      "Boss, un clic et on avance !",
+      "Validation demandée, je suis prête à enchaîner.",
+      "Je préfère demander avant de toucher au tissu.",
+      "Un petit coup d'œil, et c'est parti."
+    ],
+    "error": [
+      "Oups, un fil a sauté. Je reprends, pas de panique.",
+      "Petit accroc ! On recoud et on repart.",
+      "Ça arrive aux meilleures couturières, je corrige.",
+      "Une aiguille cassée, j'en ai d'autres.",
+      "Ce n'est qu'une retouche de plus.",
+      "Erreur repérée, c'est déjà une victoire.",
+      "On défait la couture et on la refait mieux.",
+      "Pas grave, le prochain essai sera le bon.",
+      "Un faux pli, je repasse dessus.",
+      "Je respire, je mesure, je recommence."
+    ],
+    "filler": [
+      "Vous saviez qu'un bon ourlet change tout ?",
+      "Je rêve d'une veste en velours côtelé…",
+      "J'ai encore trouvé une épingle dans ma poche.",
+      "Le satin, c'est capricieux, mais c'est beau.",
+      "Petite pensée pour les boutons, ces héros oubliés.",
+      "Un café et je retourne à ma machine.",
+      "Je classe les tissus par couleur, ça m'apaise.",
+      "On devrait organiser un défilé interne !",
+      "Le noir va avec tout, mais j'ose la couleur.",
+      "Mon mètre ruban et moi, c'est une histoire d'amour."
+    ],
+    "motivation": [
+      "Boss, ton office tourne comme un atelier de haute couture !",
+      "Les filles, vous faites un travail splendide.",
+      "Chaque détail compte, et on les soigne tous.",
+      "On est la meilleure équipe de l'atelier, je le dis !",
+      "Courage, ce jeu va être magnifique.",
+      "Maya, tes pièces mettent mes robes en valeur !",
+      "Nora, tes PNJ portent nos vêtements comme des stars.",
+      "Fières de nous ? Moi, oui !",
+      "Encore un effort, et le défilé sera parfait.",
+      "Bravo à toutes, vraiment, on assure."
+    ]
+  }
+}
